@@ -1203,6 +1203,9 @@ async function nuvemPuxar(forcar){
     /* A nuvem já tem histórico: semear por cima duplicaria tudo. */
     nuvemDispensarSemeadura();
 
+    /* cópia do documento como ele veio: migrarEstado altera o que recebe,
+       e é contra o original que se decide se há algo a devolver. */
+    const cru = JSON.parse(JSON.stringify(cheio.data.dados));
     const remoto = migrarEstado(cheio.data.dados);
     state = nuvemFundirEstado(nuvemBase, state, remoto);
     nuvemGuardarBase(remoto, cheio.data.rev);
@@ -1211,8 +1214,10 @@ async function nuvemPuxar(forcar){
     try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }catch(e){}
     nuvemFase = "ok";
     nuvemRedesenhar();
-    /* Se a fusão deixou algo que a nuvem ainda não tem, devolve. */
-    if(!nuvemIgual(state, remoto)) nuvemAgendarEnvio(400);
+    /* Se a fusão deixou algo que a nuvem ainda não tem, devolve — e a
+       limpeza de ids antigos conta como algo a devolver, senão a linha
+       ficaria suja para sempre à espera de alguém digitar qualquer coisa. */
+    if(!nuvemIgual(state, cru)) nuvemAgendarEnvio(400);
     return true;
   }catch(e){
     console.warn("[nuvem] falha ao ler:", e);
