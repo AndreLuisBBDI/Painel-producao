@@ -1075,10 +1075,11 @@ function nuvemFundirEstado(base, local, remoto){
 
 function nuvemLerCache(){
   try{ nuvemRev = Number(localStorage.getItem(NUVEM_REV_KEY)) || 0; }catch(e){ nuvemRev = 0; }
-  try{ const b = localStorage.getItem(NUVEM_BASE_KEY); nuvemBase = b ? JSON.parse(b) : null;
-       /* a base guardada antes da correção tem os ids antigos; sem isto ela
-          diria que os registros de chave nova nasceram agora nos dois lados */
-       if(nuvemBase) nuvemBase.lancamentos = normalizarIdsImportados(nuvemBase.lancamentos); }
+  /* a base não se normaliza: ela é a fotografia da linha na última troca,
+     e é comparando com ela que o painel sabe que deve uma limpeza à nuvem.
+     Ids antigos na base saem sozinhos na fusão — só existem lá, sumiram dos
+     dois lados, então foram apagados de propósito. */
+  try{ const b = localStorage.getItem(NUVEM_BASE_KEY); nuvemBase = b ? JSON.parse(b) : null; }
   catch(e){ nuvemBase = null; }
   if(!nuvemRev) nuvemBase = null;   // sem revisão conhecida a base não prova nada
 }
@@ -1208,7 +1209,10 @@ async function nuvemPuxar(forcar){
     const cru = JSON.parse(JSON.stringify(cheio.data.dados));
     const remoto = migrarEstado(cheio.data.dados);
     state = nuvemFundirEstado(nuvemBase, state, remoto);
-    nuvemGuardarBase(remoto, cheio.data.rev);
+    /* guarda o documento CRU: a base é o que a linha contém, não a leitura
+       já limpa dela. Guardando a versão limpa, nuvemEnviar compararia limpo
+       com limpo, concluiria "nada mudou" e a linha ficaria suja para sempre. */
+    nuvemGuardarBase(cru, cheio.data.rev);
     nuvemQuando = cheio.data.atualizado_em;
     nuvemQuem = cheio.data.atualizado_por || "";
     try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }catch(e){}

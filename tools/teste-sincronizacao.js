@@ -173,5 +173,17 @@ eq('nada duplica no primeiro contacto',
     S.normalizarIdsImportados([novo(151)]), 'id').length,
   1);
 
+console.log('\n13) IDS — a base guardada continua com os ids antigos, e tudo bem');
+// A base é a fotografia da linha na última troca, não uma leitura limpa dela
+// (guardá-la limpa faria nuvemEnviar concluir "nada mudou" e a linha ficaria
+// suja para sempre). Os ids antigos saem sozinhos: só existem na base, e
+// sumiram dos dois lados — logo foram apagados de propósito.
+eq('base suja (uuid + canônico) não ressuscita o id antigo',
+  S.nuvemFundirLista([velho(151), novo(151)], [novo(151)], [novo(151)], 'id').map(x=>x.id),
+  ['hist-2026-05-04-Baterias-Arthur-151']);
+eq('e não apaga o que os dois lados têm de verdade',
+  S.nuvemFundirLista([velho(151), novo(151)], [novo(151), L('b',9)], [novo(151)], 'id').length,
+  2);
+
 console.log('\n' + ok + ' ok, ' + ruim + ' falha(s)');
 process.exit(ruim ? 1 : 0);

@@ -59,7 +59,7 @@ sozinho ganha; se os dois mexeram, vale o deste PC.
 A prova disso é código que roda:
 
 ```
-node tools/teste-sincronizacao.js     # 28 asserções
+node tools/teste-sincronizacao.js     # 30 asserções
 ```
 
 ### Ids estáveis
