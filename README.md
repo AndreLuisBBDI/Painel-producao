@@ -59,22 +59,34 @@ sozinho ganha; se os dois mexeram, vale o deste PC.
 A prova disso é código que roda:
 
 ```
-node tools/teste-sincronizacao.js     # 21 asserções
+node tools/teste-sincronizacao.js     # 28 asserções
 ```
 
 ### Ids estáveis
 
 Duas máquinas que produzem o mesmo registro têm de produzir a **mesma
-chave**, senão a fusão duplica tudo. Por isso:
+chave**, senão a fusão duplica tudo. Todo lançamento **gerado por
+máquina** tira o id do próprio conteúdo:
 
 - o histórico semeado usa `hist-<data>-<grupo>-<colaborador>-<qtd>`;
 - a importação TOTVS usa `totvs-<data>-<grupo>-<grupoFino>-<colaborador>`
   (é exatamente a chave por onde `agregarRegistros` já agrupa, então não
   colide).
 
+Lançamento digitado à mão fica com id aleatório de propósito: duas pessoas
+podem produzir a mesma peça no mesmo dia e são dois lançamentos de verdade.
+
 E a semeadura do histórico só acontece **depois** que a nuvem respondeu:
 um navegador novo que semeasse antes empurraria 376 lançamentos por cima
 do que já existe.
+
+**O conserto dos PCs antigos.** Até 17/09/2026 o histórico era semeado com
+`crypto.randomUUID()` — cada computador tinha 376 ids só dele. Ao encontrar
+a nuvem pela primeira vez nada casava e os 376 viravam **752**. Por isso
+`normalizarIdsImportados()` roda em tudo que entra, venha do `localStorage`
+ou da nuvem: reescreve os ids importados para a chave do conteúdo e junta
+os que caem na mesma chave. Um estado já duplicado se desfaz sozinho na
+primeira leitura, sem ninguém apagar nada à mão.
 
 ### O selo no cabeçalho
 
@@ -106,6 +118,7 @@ tools/teste-sincronizacao.js    prova da fusão, extraída do próprio index.htm
 ```
 
 O `tools/teste-sincronizacao.js` não testa uma cópia do código: ele arranca
-`nuvemIgual`, `nuvemFundirLista` e `nuvemFundirEstado` de dentro do
+`nuvemIgual`, `nuvemFundirLista`, `nuvemFundirEstado` e a normalização de
+ids de dentro do
 `index.html` por nome. Se alguém mexer na fusão e esquecer do teste, o
 teste quebra.

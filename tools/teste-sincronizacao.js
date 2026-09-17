@@ -26,7 +26,9 @@ M._compile([
   'let nuvemConflitos = 0;',
   colecoes[0],
   pega('nuvemIgual'), pega('nuvemFundirLista'), pega('nuvemFundirEstado'),
-  'module.exports={nuvemFundirLista,nuvemFundirEstado,conflitos:()=>nuvemConflitos};'
+  pega('chaveImportado'), pega('normalizarIdsImportados'),
+  'module.exports={nuvemFundirLista,nuvemFundirEstado,normalizarIdsImportados,'
+  + 'chaveImportado,conflitos:()=>nuvemConflitos};'
 ].join('\n'), 'sync.js');
 const S = M.exports;
 
@@ -135,6 +137,41 @@ eq('grupo é identificado pelo nome',
     { grupos:[{nome:'Baterias', vendasMedias:888}] }
   ).grupos.map(g=>[g.nome, g.vendasMedias]),
   [['Baterias',888],['Telas',5]]);
+
+console.log('\n11) IDS — o PC que semeou antes de 17/09/2026 (id era crypto.randomUUID)');
+// Era assim que o histórico nascia até 17/09: mesmo conteúdo, id sorteado.
+const velho = (qtd) => ({ id:'60a9f6e0-3610-402f-83f3-9e2508955fef', data:'2026-05-04',
+  grupo:'Baterias', colaborador:'Arthur', pedido:'Importado TOTVS (sem horário)', qtd, inicio:'', fim:'' });
+const novo  = (qtd) => ({ id:'hist-2026-05-04-Baterias-Arthur-' + qtd, data:'2026-05-04',
+  grupo:'Baterias', colaborador:'Arthur', pedido:'Importado TOTVS (sem horário)', qtd, inicio:'', fim:'' });
+
+eq('o id sorteado vira a chave do conteúdo',
+  S.normalizarIdsImportados([velho(151)]).map(x=>x.id),
+  ['hist-2026-05-04-Baterias-Arthur-151']);
+eq('importado do TOTVS (tem grupoFino) usa a chave totvs-',
+  S.chaveImportado({ data:'2026-05-04', grupo:'Baterias', grupoFino:'BAT12V', colaborador:'Arthur',
+    pedido:'Importado TOTVS (sem horário)', qtd:9 }),
+  'totvs-2026-05-04-Baterias-BAT12V-Arthur');
+eq('lançamento digitado à mão não é tocado (id aleatório é de propósito)',
+  S.chaveImportado({ id:'x', data:'2026-05-04', grupo:'Baterias', colaborador:'Arthur',
+    pedido:'Pedido 4471', qtd:9 }),
+  null);
+eq('o estado já duplicado (376+376=752) se desfaz numa leitura',
+  S.normalizarIdsImportados([novo(151), velho(151)]).length, 1);
+eq('normalizar duas vezes não muda nada (idempotente)',
+  S.normalizarIdsImportados(S.normalizarIdsImportados([velho(151), novo(151)])).map(x=>x.id),
+  ['hist-2026-05-04-Baterias-Arthur-151']);
+eq('quantidade diferente é outro registro, não junta',
+  S.normalizarIdsImportados([velho(151), velho(60)]).length, 2);
+
+console.log('\n12) IDS + FUSÃO — o caso inteiro: PC antigo encontra a nuvem');
+// PC com o histórico antigo (id sorteado) puxa a nuvem com o mesmo histórico
+// já normalizado. Sem a migração isto devolvia 2; tem de devolver 1.
+eq('nada duplica no primeiro contacto',
+  S.nuvemFundirLista(null,
+    S.normalizarIdsImportados([velho(151)]),
+    S.normalizarIdsImportados([novo(151)]), 'id').length,
+  1);
 
 console.log('\n' + ok + ' ok, ' + ruim + ' falha(s)');
 process.exit(ruim ? 1 : 0);

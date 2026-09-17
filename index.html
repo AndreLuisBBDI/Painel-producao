@@ -862,6 +862,42 @@ function loadState(){
 /* As migrações valem para qualquer origem, disco ou nuvem: o que vem do
    Supabase pode ter sido gravado noutro PC por uma versão mais antiga do
    painel e tem de entrar pela mesma porta. */
+/* Lançamento gerado por máquina — o histórico semeado e a importação do
+   TOTVS — tem de receber a MESMA chave em qualquer computador, senão a
+   fusão com a nuvem empilha duas cópias do mesmo dia de trabalho. A chave
+   sai do próprio conteúdo. Lançamento digitado à mão não passa por aqui: o
+   id dele é aleatório de propósito, duas pessoas podem lançar a mesma peça
+   no mesmo dia e são dois lançamentos de verdade. */
+function chaveImportado(l){
+  /* o texto é o de MARCADOR_IMPORTADO, que é const declarado mais abaixo e
+     ainda não pode ser lido daqui quando o estado carrega. */
+  if(!l || typeof l.pedido !== "string" || !l.pedido.startsWith("Importado TOTVS")) return null;
+  return l.grupoFino
+    ? "totvs-" + l.data + "-" + l.grupo + "-" + l.grupoFino + "-" + l.colaborador
+    : "hist-"  + l.data + "-" + l.grupo + "-" + l.colaborador + "-" + l.qtd;
+}
+
+/* Reescreve os ids dos importados para a chave do conteúdo e junta os que
+   caírem na mesma chave. É o conserto retroativo: até 17/09/2026 o histórico
+   era semeado com crypto.randomUUID(), então cada PC tinha 376 ids próprios.
+   Ao encontrar a nuvem, nada casava e os 376 viravam 752. Roda em tudo que
+   entra — o que vem do localStorage e o que vem da nuvem —, então um estado
+   já duplicado se desfaz sozinho na primeira leitura. */
+function normalizarIdsImportados(lista){
+  if(!Array.isArray(lista)) return lista;
+  const posicao = new Map();
+  const saida = [];
+  lista.forEach(l=>{
+    const chave = chaveImportado(l);
+    if(chave === null){ saida.push(l); return; }
+    l.id = chave;
+    /* mesma chave = mesmo registro: fica o último, na posição do primeiro */
+    if(posicao.has(chave)) saida[posicao.get(chave)] = l;
+    else { posicao.set(chave, saida.length); saida.push(l); }
+  });
+  return saida;
+}
+
 function migrarEstado(parsed){
   try{
     if(!parsed || !parsed.grupos || !parsed.capacidade || !parsed.lancamentos) return defaultState();
@@ -893,6 +929,7 @@ function migrarEstado(parsed){
     if(!parsed.justificativas) parsed.justificativas = defaultState().justificativas;
     if(!parsed.observacoesEquipe) parsed.observacoesEquipe = [];
     if(!parsed.climaEquipe) parsed.climaEquipe = [];
+    parsed.lancamentos = normalizarIdsImportados(parsed.lancamentos);
     return parsed;
   }catch(e){
     console.error("Erro ao migrar os dados recebidos:", e);
@@ -1038,7 +1075,10 @@ function nuvemFundirEstado(base, local, remoto){
 
 function nuvemLerCache(){
   try{ nuvemRev = Number(localStorage.getItem(NUVEM_REV_KEY)) || 0; }catch(e){ nuvemRev = 0; }
-  try{ const b = localStorage.getItem(NUVEM_BASE_KEY); nuvemBase = b ? JSON.parse(b) : null; }
+  try{ const b = localStorage.getItem(NUVEM_BASE_KEY); nuvemBase = b ? JSON.parse(b) : null;
+       /* a base guardada antes da correção tem os ids antigos; sem isto ela
+          diria que os registros de chave nova nasceram agora nos dois lados */
+       if(nuvemBase) nuvemBase.lancamentos = normalizarIdsImportados(nuvemBase.lancamentos); }
   catch(e){ nuvemBase = null; }
   if(!nuvemRev) nuvemBase = null;   // sem revisão conhecida a base não prova nada
 }
@@ -1700,14 +1740,10 @@ function semearHistorico(){
     {id: crypto.randomUUID(), data:"2026-07-13", grupo:"Telas", colaborador:"Samira", pedido:"Importado TOTVS (sem horário)", qtd:40, inicio:"", fim:""}
   );
   /* ids estáveis: dois PCs que semeiam o mesmo histórico têm de gerar as
-     MESMAS chaves, senão a fusão com a nuvem duplicaria os 700 registros.
-     crypto.randomUUID() aqui daria um id diferente em cada máquina. */
-  const vistos = {};
-  state.lancamentos.forEach(l=>{
-    const raiz = "hist-" + l.data + "-" + l.grupo + "-" + l.colaborador + "-" + l.qtd;
-    vistos[raiz] = (vistos[raiz] || 0) + 1;
-    l.id = vistos[raiz] > 1 ? raiz + "-" + vistos[raiz] : raiz;
-  });
+     MESMAS chaves, senão a fusão com a nuvem duplicaria os 376 registros.
+     crypto.randomUUID() acima daria um id diferente em cada máquina — é a
+     mesma função que conserta quem já semeou com a versão antiga. */
+  state.lancamentos = normalizarIdsImportados(state.lancamentos);
   localStorage.setItem(STORAGE_KEY+"_seeded","1");
   saveState();
 }
