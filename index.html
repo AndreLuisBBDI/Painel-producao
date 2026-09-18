@@ -111,6 +111,13 @@ main{max-width:1200px;margin:0 auto;padding:28px 24px 80px;}
 .view{display:none;}
 .view.active{display:block;animation:fade .2s ease;}
 @keyframes fade{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:translateY(0);}}
+@keyframes pulsoOnline{0%{box-shadow:0 0 0 0 rgba(34,197,94,.55);}70%{box-shadow:0 0 0 6px rgba(34,197,94,0);}100%{box-shadow:0 0 0 0 rgba(34,197,94,0);}}
+.ponto{width:8px;height:8px;border-radius:50%;display:inline-block;flex:0 0 auto;}
+.ponto.verde{background:#22c55e;animation:pulsoOnline 2.2s infinite;}
+.ponto.cinza{background:var(--text-muted);opacity:.45;}
+.presenca-chip{display:inline-flex;align-items:center;gap:7px;background:var(--good-bg);color:var(--text);border-radius:20px;padding:6px 13px;font-size:12.5px;font-weight:600;font-family:'Inter';}
+.presenca-chip em{font-style:normal;font-weight:500;color:var(--text-muted);}
+.presenca-chip small{font-weight:500;color:var(--text-muted);font-size:11.5px;}
 
 h2.section-title{
   font-family:'Manrope',sans-serif;letter-spacing:-.1px;
@@ -237,6 +244,7 @@ td.num, th.num{font-family:'IBM Plex Mono',monospace;text-align:right;}
       <select id="filterMonth"></select>
       <input type="number" id="filterYear" min="2020" max="2100" style="width:90px">
       <button class="btn secondary btn-sm" id="btnTema" style="margin-top:0;">🌙 Escuro</button>
+      <span id="presencaSelo" title="Quem está no painel agora" style="font-size:12px;display:inline-flex;align-items:center;gap:5px;white-space:nowrap;color:var(--text-muted);cursor:pointer;"></span>
       <span id="nuvemSelo" title="Estado da sincronização" style="font-size:12px;display:inline-flex;align-items:center;gap:5px;white-space:nowrap;color:var(--text-muted);"></span>
     </div>
   </div>
@@ -247,6 +255,7 @@ td.num, th.num{font-family:'IBM Plex Mono',monospace;text-align:right;}
     <button data-view="desempenho">Desempenho</button>
     <button data-view="demandas">Demandas</button>
     <button data-view="config">Configurações</button>
+    <button data-view="logs">Logs</button>
   </nav>
 </header>
 
@@ -730,6 +739,30 @@ td.num, th.num{font-family:'IBM Plex Mono',monospace;text-align:right;}
     </div>
   </section>
 
+  <!-- =============== LOGS (quem fez o quê, e quem está aqui agora) =============== -->
+  <section class="view" id="view-logs">
+    <h2 class="section-title">Quem está no painel agora</h2>
+    <p class="note">É o mesmo que a bolinha verde lá em cima mostra. Aparece quem abriu o painel <strong>e escolheu o nome</strong> no alto da tela — sem nome escolhido não dá para saber quem é. Quem fecha a aba some na hora; quem perde a internet some em cerca de um minuto e meio.</p>
+    <div class="form-card" id="presencaLista" style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;"></div>
+
+    <h2 class="section-title">Registro de atividade</h2>
+    <p class="note">Tudo o que mexe nos dados fica registrado com data e hora: quem acessou, quem importou arquivo do TOTVS, quem lançou, quem apagou, quem restaurou backup. O registro é <strong>só de escrita</strong>: nem o painel nem o banco permitem editar ou apagar o que já entrou.</p>
+    <div class="form-card" style="margin-bottom:16px;">
+      <div class="form-grid">
+        <div class="field"><label>Quem</label><select id="logFiltroQuem"></select></div>
+        <div class="field"><label>Ação</label><select id="logFiltroAcao"></select></div>
+      </div>
+      <button class="btn secondary" id="btnLogAtualizar">Atualizar</button>
+      <span id="logResumo" style="margin-left:14px;color:var(--text-muted);font-size:13px;"></span>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Data e hora</th><th>Quem</th><th>Ação</th><th>Detalhe</th></tr></thead>
+        <tbody id="tblLogs"></tbody>
+      </table>
+    </div>
+  </section>
+
 </main>
 
 <script>
@@ -769,6 +802,8 @@ function aplicarIdentidadeNosFormularios(){
 document.getElementById("selIdentidade").addEventListener("change", ()=>{
   localStorage.setItem(IDENTIDADE_KEY, document.getElementById("selIdentidade").value);
   aplicarIdentidadeNosFormularios();
+  /* quem chegou sem nome escolhido só agora pode ser registrado */
+  logAcesso(); presencaAtualizar(); logLer();
 });
 
 /* ============================================================
@@ -1350,6 +1385,308 @@ async function nuvemIniciar(){
   document.addEventListener("focusout", ()=>{ if(nuvemRenderPendente) setTimeout(nuvemRedesenhar, 80); });
   window.addEventListener("online",  ()=>{ nuvemPuxar(true).then(()=>nuvemAgendarEnvio(300)); });
   window.addEventListener("offline", ()=>{ nuvemFase = "offline"; nuvemPintar(); });
+
+  /* a partir daqui existe cliente: é o que o log e a presença precisam */
+  logPresencaIniciar();
+}
+
+/* ============================================================
+   LOG DE ATIVIDADE E PRESENÇA
+
+   Duas tabelas próprias (db/painel_producao_log.sql), fora do jsonb do
+   estado. O estado é um bloco que se funde e se reescreve inteiro a cada
+   gravação; log é o contrário disso — linha que nasce, não muda e não
+   some. Juntar os dois faria cada lançamento reenviar o histórico de
+   acessos inteiro, e a fusão de três lados teria de resolver conflito em
+   algo que, por definição, não conflita.
+============================================================ */
+const LOG_TABELA      = "painel_producao_log";
+const PRESENCA_TABELA = "painel_producao_presenca";
+const LOG_TETO        = 400;          // quantas linhas a tela carrega
+const PRESENCA_BATIDA_MS   = 30000;   // de quanto em quanto se diz "estou aqui"
+const PRESENCA_VALIDADE_MS = 100000;  // até quando a última batida ainda vale
+const LOG_ACESSO_KEY  = STORAGE_KEY + "_acesso";
+const LOG_ACESSO_MS   = 30 * 60000;   // uma visita, não um F5
+
+let logLinhas    = [];
+let logEstado    = "vazio";   // vazio | carregando | ok | erro
+let logErroTexto = "";
+let logLendo     = false;
+let presencaLista = [];
+let presencaPendente = null;
+
+/* O nome que aparece no log e na presença vem de tabela pública: quem tem
+   a chave publicável — que está aqui no arquivo — grava nela o que quiser.
+   Nada que saia dessas duas tabelas entra no HTML sem passar por aqui. */
+function esc(s){
+  return String(s == null ? "" : s).replace(/[&<>"']/g, c =>
+    ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+}
+
+const LOG_ROTULOS = {
+  "acesso":"Acesso",
+  "importacao-totvs":"Importação TOTVS",
+  "importacao-vendas":"Vendas médias",
+  "lancamento":"Lançamento",
+  "exclusao":"Exclusão",
+  "backup-exportado":"Backup exportado",
+  "backup-restaurado":"Backup restaurado",
+  "nuvem-sobreposta":"Nuvem sobreposta",
+  "capacidade":"Capacidade",
+  "metas":"Metas"
+};
+/* hasOwnProperty e não LOG_ROTULOS[a]: uma ação gravada como "__proto__"
+   devolveria um objeto em vez de texto. */
+function logRotulo(a){
+  return Object.prototype.hasOwnProperty.call(LOG_ROTULOS, a) ? LOG_ROTULOS[a] : a;
+}
+function logCor(a){
+  if(a === "acesso") return "";
+  if(a === "exclusao") return "bad";
+  if(a.indexOf("importacao") === 0 || a === "backup-restaurado" || a === "nuvem-sobreposta") return "warn";
+  return "good";
+}
+
+function logAbaAtual(){
+  const b = document.querySelector("nav.tabs button.active");
+  return b ? b.textContent.trim().slice(0,40) : "";
+}
+
+function logDataHora(iso){
+  const d = new Date(iso);
+  if(isNaN(d.getTime())) return "—";
+  return d.toLocaleDateString("pt-BR") + " às "
+       + d.toLocaleTimeString("pt-BR", {hour:"2-digit", minute:"2-digit", second:"2-digit"});
+}
+
+function logHaQuanto(iso){
+  const seg = Math.max(0, Math.round((Date.now() - new Date(iso).getTime())/1000));
+  if(seg < 75) return "agora";
+  const min = Math.round(seg/60);
+  if(min < 60) return "há " + min + " min";
+  const h = Math.round(min/60);
+  return h < 24 ? "há " + h + "h" : "há " + Math.round(h/24) + "d";
+}
+
+/* Grava e segue a vida. Painel que trava porque a auditoria caiu é pior do
+   que painel sem auditoria: o erro fica no console e o trabalho não para. */
+function logRegistrar(acao, detalhe, dados){
+  if(!nuvemSb) return;
+  const linha = {
+    quem: String(nuvemQuemSou()).slice(0,80),
+    acao: String(acao).slice(0,40),
+    detalhe: detalhe == null ? null : String(detalhe).slice(0,500),
+    dados: dados || null
+  };
+  try{
+    nuvemSb.from(LOG_TABELA).insert(linha).then(
+      r => { if(r && r.error) console.warn("[log] não gravou:", r.error.message); },
+      e => console.warn("[log] não gravou:", e));
+  }catch(e){ console.warn("[log] não gravou:", e); }
+}
+
+/* Uma linha por visita, não por F5: quem recarrega cinco vezes seguidas
+   testando alguma coisa não vira cinco acessos. Trocar o nome no alto da
+   tela conta como visita nova — é outra pessoa sentada ali. */
+function logAcesso(){
+  const quem = localStorage.getItem(IDENTIDADE_KEY);
+  if(!quem) return;               // sem nome escolhido não há o que registrar
+  let marca = null;
+  try{ marca = JSON.parse(localStorage.getItem(LOG_ACESSO_KEY) || "null"); }catch(e){}
+  if(marca && marca.quem === quem && (Date.now() - marca.em) < LOG_ACESSO_MS) return;
+  try{ localStorage.setItem(LOG_ACESSO_KEY, JSON.stringify({quem:quem, em:Date.now()})); }catch(e){}
+  logRegistrar("acesso", "Abriu o painel");
+}
+
+/* Sempre os mais recentes, sempre com teto: select sem limite para em 1.000
+   linhas sem avisar, e ordenado ao contrário sobraria justo o log mais velho. */
+async function logLer(){
+  if(!nuvemSb || logLendo) return;
+  logLendo = true;
+  if(logEstado !== "ok"){ logEstado = "carregando"; renderLogs(); }
+  try{
+    const r = await nuvemSb.from(LOG_TABELA)
+      .select("seq,quem,acao,detalhe,dados,criado_em")
+      .order("criado_em", {ascending:false})
+      .limit(LOG_TETO);
+    if(r.error) throw r.error;
+    logLinhas = r.data || [];
+    logEstado = "ok"; logErroTexto = "";
+  }catch(e){
+    logEstado = "erro";
+    logErroTexto = (e && e.message) ? e.message : String(e);
+  }
+  logLendo = false;
+  renderLogs();
+}
+
+/* Uma linha por pessoa (quem é chave primária): duas abas do mesmo nome
+   batem na mesma linha, que é o que se quer — a pergunta é "quem está
+   aqui", não "quantas abas". A tabela não acumula fantasma. */
+/* Devolve promessa porque quem lê tem de esperar: lendo antes de a batida
+   chegar, quem acabou de escolher o nome via "ninguém online" com ele
+   próprio online, e ficava assim até a volta do relógio. */
+function presencaBater(){
+  if(!nuvemSb) return Promise.resolve();
+  const quem = localStorage.getItem(IDENTIDADE_KEY);
+  if(!quem) return Promise.resolve();
+  try{
+    return nuvemSb.from(PRESENCA_TABELA)
+      .upsert({ quem:quem.slice(0,80), visto_em:new Date().toISOString(), aba:logAbaAtual() },
+              { onConflict:"quem" })
+      .then(r => { if(r && r.error) console.warn("[presença] não bateu:", r.error.message); },
+            e => console.warn("[presença] não bateu:", e));
+  }catch(e){ return Promise.resolve(); }
+}
+
+/* bater e só então ler — é sempre esta a ordem que a tela quer */
+function presencaAtualizar(){ return presencaBater().then(presencaLer); }
+
+async function presencaLer(){
+  if(!nuvemSb) return;
+  const corte = new Date(Date.now() - PRESENCA_VALIDADE_MS).toISOString();
+  try{
+    const r = await nuvemSb.from(PRESENCA_TABELA)
+      .select("quem,visto_em,aba")
+      .gte("visto_em", corte)
+      .order("visto_em", {ascending:false})
+      .limit(60);
+    if(r.error) throw r.error;
+    presencaLista = r.data || [];
+  }catch(e){ /* sem rede a bolinha apaga sozinha; não é caso de gritar */ }
+  renderPresenca();
+}
+
+/* O realtime avisa a cada batida de cada pessoa. Sem este freio, cinco
+   pessoas online fariam cinco leituras a cada 30 s em cada máquina. */
+function presencaAgendarLeitura(){
+  if(presencaPendente) return;
+  presencaPendente = setTimeout(()=>{ presencaPendente = null; presencaLer(); }, 3000);
+}
+
+function renderPresenca(){
+  const selo = document.getElementById("presencaSelo");
+  const eu = localStorage.getItem(IDENTIDADE_KEY) || "";
+  if(selo){
+    if(!eu){
+      selo.innerHTML = '<span class="ponto cinza"></span>escolha seu nome';
+      selo.title = "Escolha seu nome ali ao lado para aparecer como online.";
+    }else if(!presencaLista.some(p=>p.quem === eu) && presencaLista.length === 0){
+      /* nome escolhido mas a nuvem ainda não confirmou ninguém: dizer "só
+         você" aqui seria inventar. Acende sozinho na primeira batida. */
+      selo.innerHTML = '<span class="ponto cinza"></span>conectando…';
+      selo.title = "Ainda não confirmei sua presença na nuvem.";
+    }else{
+      const outros = presencaLista.map(p=>p.quem).filter(n=>n !== eu);
+      const rotulo = outros.length === 0 ? "só você"
+                   : outros.length === 1 ? esc(outros[0])
+                   : esc(outros[0]) + " +" + (outros.length - 1);
+      selo.innerHTML = '<span class="ponto verde"></span>' + rotulo;
+      /* .title é propriedade, não HTML: aqui o texto cru é o certo */
+      selo.title = presencaLista.length
+        ? "Online agora: " + presencaLista.map(p=>p.quem + (p.aba ? " (" + p.aba + ")" : "")).join(", ")
+        : "Ninguém online no momento.";
+    }
+  }
+
+  const caixa = document.getElementById("presencaLista");
+  if(!caixa) return;
+  caixa.innerHTML = presencaLista.length === 0
+    ? '<div class="empty"><div class="display">Ninguém online</div>Quem abrir o painel e escolher o nome aparece aqui em até 30 segundos.</div>'
+    : presencaLista.map(p =>
+        '<span class="presenca-chip"><span class="ponto verde"></span>' + esc(p.quem)
+        + (p.quem === eu ? ' <em>(você)</em>' : "")
+        + (p.aba ? ' <em>' + esc(p.aba) + '</em>' : "")
+        + ' <small>' + esc(logHaQuanto(p.visto_em)) + '</small></span>').join("");
+}
+
+function renderLogs(){
+  const corpo = document.getElementById("tblLogs");
+  if(!corpo) return;
+  const selQuem = document.getElementById("logFiltroQuem");
+  const selAcao = document.getElementById("logFiltroAcao");
+
+  /* As opções saem do que veio, não de uma lista fixa: ação nova no código
+     aparece no filtro sem ninguém lembrar de cadastrar. Só se remonta o
+     <select> quando o conjunto muda — renderAll roda a cada tecla, e
+     reescrever a lista debaixo do dedo de quem está escolhendo é sofrível. */
+  const pessoas = Array.from(new Set(logLinhas.map(l=>l.quem))).sort();
+  const acoes   = Array.from(new Set(logLinhas.map(l=>l.acao))).sort();
+  const chave = pessoas.join("|") + "#" + acoes.join("|");
+  if(selQuem.dataset.chave !== chave){
+    const quemAntes = selQuem.value, acaoAntes = selAcao.value;
+    selQuem.innerHTML = '<option value="">Todo mundo</option>'
+      + pessoas.map(n=>'<option value="' + esc(n) + '">' + esc(n) + '</option>').join("");
+    selAcao.innerHTML = '<option value="">Todas as ações</option>'
+      + acoes.map(a=>'<option value="' + esc(a) + '">' + esc(logRotulo(a)) + '</option>').join("");
+    if(pessoas.indexOf(quemAntes) >= 0) selQuem.value = quemAntes;
+    if(acoes.indexOf(acaoAntes) >= 0)   selAcao.value = acaoAntes;
+    selQuem.dataset.chave = chave;
+  }
+
+  const lista = logLinhas.filter(l =>
+    (!selQuem.value || l.quem === selQuem.value) &&
+    (!selAcao.value || l.acao === selAcao.value));
+
+  const resumo = document.getElementById("logResumo");
+  if(logEstado === "carregando")  resumo.textContent = "Carregando…";
+  else if(logEstado === "erro")   resumo.textContent = "Não consegui ler o registro: " + logErroTexto;
+  else if(logLinhas.length === 0) resumo.textContent = "";
+  else resumo.textContent = lista.length === logLinhas.length
+      ? lista.length + " registro(s) — os " + LOG_TETO + " mais recentes."
+      : lista.length + " de " + logLinhas.length + " registro(s).";
+
+  if(lista.length === 0){
+    corpo.innerHTML = '<tr><td colspan="4"><div class="empty"><div class="display">'
+      + (logLinhas.length === 0 ? "Nada registrado ainda" : "Nada com esses filtros")
+      + '</div>Acessos, importações e lançamentos passam a aparecer aqui.</div></td></tr>';
+    return;
+  }
+  corpo.innerHTML = lista.map(l =>
+    '<tr><td style="white-space:nowrap;">' + esc(logDataHora(l.criado_em)) + '</td>'
+    + '<td>' + esc(l.quem) + '</td>'
+    + '<td><span class="badge ' + logCor(l.acao) + '">' + esc(logRotulo(l.acao)) + '</span></td>'
+    + '<td>' + esc(l.detalhe || "—") + '</td></tr>').join("");
+}
+
+function logPresencaIniciar(){
+  logAcesso();
+  presencaAtualizar();
+  logLer();
+
+  setInterval(()=>{ if(!document.hidden) presencaAtualizar(); }, PRESENCA_BATIDA_MS);
+  /* a lista diz "há X min"; sem isto o texto congela na hora da leitura */
+  setInterval(renderPresenca, 20000);
+  document.addEventListener("visibilitychange", ()=>{
+    if(!document.hidden) presencaAtualizar();
+  });
+
+  try{
+    nuvemSb.channel("painel-producao-log")
+      .on("postgres_changes", { event:"INSERT", schema:"public", table:LOG_TABELA }, ()=>{
+        const aba = document.getElementById("view-logs");
+        if(aba && aba.classList.contains("active")) logLer();
+      })
+      .on("postgres_changes", { event:"*", schema:"public", table:PRESENCA_TABELA }, presencaAgendarLeitura)
+      .subscribe();
+  }catch(e){ console.warn("[log] realtime indisponível:", e); }
+
+  /* Fechou a aba: some da lista na hora. O supabase-js não sobrevive ao
+     fechamento da página — daí o fetch cru com keepalive. Não apaga a
+     linha: a política não deixa apagar quem está online, e não é para
+     deixar mesmo. Só empurra a última batida para o passado. */
+  window.addEventListener("pagehide", ()=>{
+    const quem = localStorage.getItem(IDENTIDADE_KEY);
+    if(!quem) return;
+    try{
+      fetch(NUVEM_URL + "/rest/v1/" + PRESENCA_TABELA + "?quem=eq." + encodeURIComponent(quem), {
+        method:"PATCH", keepalive:true,
+        headers:{ "apikey":NUVEM_KEY, "Authorization":"Bearer " + NUVEM_KEY,
+                  "Content-Type":"application/json", "Prefer":"return=minimal" },
+        body: JSON.stringify({ visto_em: new Date(Date.now() - 3600000).toISOString() })
+      });
+    }catch(e){}
+  });
 }
 
 /* histórico real importado da base TOTVS (04/05/2026 a 13/07/2026), agregado por dia + grupo + colaborador.
@@ -1868,6 +2205,10 @@ document.querySelectorAll("nav.tabs button").forEach(btn=>{
     btn.classList.add("active");
     document.getElementById("view-"+btn.dataset.view).classList.add("active");
     renderAll();
+    /* a presença mostra em que aba cada um está; e o log só vai ao banco
+       quando alguém abre a aba, não a cada troca de tela */
+    presencaAtualizar();
+    if(btn.dataset.view === "logs") logLer();
   });
 });
 
@@ -2160,6 +2501,10 @@ document.getElementById("btnAddLanc").addEventListener("click", ()=>{
 
   state.lancamentos.push({ id: crypto.randomUUID(), data, grupo, colaborador, pedido, qtd:Number(qtd), inicio, fim });
   saveState();
+  logRegistrar("lancamento",
+    colaborador + " · " + grupo + " · " + qtd + " peça(s) em " + formatarDataBr(data)
+      + (pedido ? " · " + pedido : ""),
+    { data:data, grupo:grupo, colaborador:colaborador, qtd:Number(qtd), pedido:pedido });
   msg.textContent = "Lançamento adicionado.";
   msg.style.color = "var(--good)";
   document.getElementById("fColab").value = "";
@@ -2205,8 +2550,13 @@ function renderLancamentos(){
 }
 
 function removerLancamento(id){
+  const alvo = state.lancamentos.find(l=>l.id===id);
   state.lancamentos = state.lancamentos.filter(l=>l.id!==id);
   saveState();
+  if(alvo) logRegistrar("exclusao",
+    "Apagou " + alvo.qtd + " peça(s) · " + alvo.grupo + " · " + alvo.colaborador
+      + " · " + formatarDataBr(alvo.data),
+    { id:id, data:alvo.data, grupo:alvo.grupo, colaborador:alvo.colaborador, qtd:alvo.qtd });
   renderAll();
 }
 
@@ -2982,6 +3332,9 @@ document.getElementById("btnAplicarVendas").addEventListener("click", ()=>{
     if(previaVendasCalculada[g.nome] !== undefined) g.vendasMedias = previaVendasCalculada[g.nome];
   });
   saveState();
+  logRegistrar("importacao-vendas",
+    "Atualizou a venda média de " + Object.keys(previaVendasCalculada).length + " grupo(s)",
+    previaVendasCalculada);
   renderAll();
   document.getElementById("importVendasMsg").textContent = "Vendas médias atualizadas!";
   document.getElementById("importVendasMsg").style.color = "var(--good)";
@@ -3108,6 +3461,16 @@ document.getElementById("btnImportTotvs").addEventListener("click", async ()=>{
     if(removidos > 0) detalheTxt += ` ${removidos} lançamento(s) importado(s) anteriormente para essas datas foram substituídos.`;
     if(gruposNovos && gruposNovos.length > 0) detalheTxt += ` Novos códigos de grupo apareceram e foram adicionados em Configurações com peso zerado (classificados como Diversos por padrão): ${gruposNovos.join(", ")}. Defina o grupo macro e os valores de referência lá.`;
     detalhes.textContent = detalheTxt;
+
+    /* antes de limpar o input: zerar .value zera também .files */
+    logRegistrar("importacao-totvs",
+      input.files[0].name + " — " + agregados.length + " lançamento(s), "
+        + registros.length + " item(ns), " + datasOrdenadas[0] + " a "
+        + datasOrdenadas[datasOrdenadas.length-1]
+        + (removidos > 0 ? ", " + removidos + " substituído(s)" : ""),
+      { arquivo:input.files[0].name, lancamentos:agregados.length, itens:registros.length,
+        de:datasOrdenadas[0], ate:datasOrdenadas[datasOrdenadas.length-1],
+        substituidos:removidos, gruposNovos:gruposNovos || [] });
 
     input.value = "";
     renderAll();
@@ -3590,6 +3953,11 @@ document.getElementById("btnSaveMetasProducao").addEventListener("click", ()=>{
   state.metasProducao.metaHorasMinDia = Number(document.getElementById("metaHorasMinDia").value)||0;
   state.metasProducao.horasMaxDia = Number(document.getElementById("horasMaxDiaInput").value)||8.8;
   saveState();
+  logRegistrar("metas",
+    "Base " + state.metasProducao.baseUnidades + " un., mínimo "
+      + state.metasProducao.metaHorasMinDia + " h/dia, máximo "
+      + state.metasProducao.horasMaxDia + " h/dia",
+    state.metasProducao);
   renderAll();
 });
 
@@ -3677,6 +4045,10 @@ document.getElementById("btnSaveCap").addEventListener("click", ()=>{
     eficiencia: Number(document.getElementById("cEficiencia").value)||0,
   };
   saveState();
+  logRegistrar("capacidade",
+    state.capacidade.numPessoas + " pessoa(s), " + state.capacidade.horasDia + " h/dia, "
+      + state.capacidade.diasUteis + " dia(s) úteis, eficiência " + state.capacidade.eficiencia + "%",
+    state.capacidade);
   renderAll();
 });
 
@@ -3687,6 +4059,7 @@ document.getElementById("btnExport").addEventListener("click", ()=>{
   const a = document.createElement("a");
   a.href = url; a.download = `backup-painel-producao-${new Date().toISOString().slice(0,10)}.json`;
   a.click();
+  logRegistrar("backup-exportado", a.download + " — " + state.lancamentos.length + " lançamento(s)");
   URL.revokeObjectURL(url);
 });
 document.getElementById("btnImport").addEventListener("click", ()=> document.getElementById("fileImport").click());
@@ -3699,8 +4072,14 @@ document.getElementById("fileImport").addEventListener("change", (e)=>{
     try{
       const parsed = JSON.parse(ev.target.result);
       if(!parsed.grupos || !parsed.capacidade || !parsed.lancamentos) throw new Error("formato inválido");
-      state = parsed;
+      /* migrarEstado e não o cru: um backup gerado antes de 17/09/2026 traz
+         os ids sorteados do histórico semeado, e sem normalizar eles voltam
+         a duplicar os 376 lançamentos na primeira fusão com a nuvem. */
+      state = migrarEstado(parsed);
       saveState();
+      logRegistrar("backup-restaurado",
+        file.name + " — passou a valer " + state.lancamentos.length + " lançamento(s)",
+        { arquivo:file.name, lancamentos:state.lancamentos.length });
       renderAll();
       alert("Backup importado com sucesso.");
     }catch(err){
@@ -3722,6 +4101,8 @@ function renderAll(){
   renderDesempenho();
   renderConfig();
   renderIdentidade();
+  renderPresenca();
+  renderLogs();
 }
 
 document.getElementById("btnNuvemAgora").addEventListener("click", async ()=>{
@@ -3735,8 +4116,20 @@ document.getElementById("btnNuvemSobrepor").addEventListener("click", async ()=>
     + "Os outros computadores passam a ver estes " + quantos + " lançamentos.\n"
     + "O que estiver só na nuvem e não estiver aqui deixa de aparecer.")) return;
   const ok = await nuvemSobrepor();
+  if(ok) logRegistrar("nuvem-sobreposta",
+    "Substituiu a nuvem pelos dados deste computador — " + quantos + " lançamento(s)",
+    { lancamentos: quantos });
   alert(ok ? "Pronto: a nuvem passou a ter os dados deste computador."
            : "Não deu para substituir agora. Alguém pode ter gravado neste instante — clique em \u201cSincronizar agora\u201d e tente de novo.");
+});
+
+document.getElementById("btnLogAtualizar").addEventListener("click", ()=>{ logLer(); presencaAtualizar(); });
+document.getElementById("logFiltroQuem").addEventListener("change", renderLogs);
+document.getElementById("logFiltroAcao").addEventListener("change", renderLogs);
+/* clicar na bolinha leva para a lista inteira */
+document.getElementById("presencaSelo").addEventListener("click", ()=>{
+  const aba = document.querySelector('nav.tabs button[data-view="logs"]');
+  if(aba) aba.click();
 });
 
 document.getElementById("fData").valueAsDate = new Date();
