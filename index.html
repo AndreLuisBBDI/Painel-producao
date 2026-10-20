@@ -88,10 +88,10 @@ header.topbar{
 }
 .brand p{margin:3px 0 0;color:var(--text-muted);font-size:13px;}
 
-.month-select{display:flex;gap:8px;align-items:center;}
+.month-select{display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
 .month-select select, .month-select input{
   background:var(--surface);border:1px solid var(--border);color:var(--text);
-  padding:8px 12px;border-radius:7px;font-family:'IBM Plex Mono',monospace;font-size:13px;
+  padding:8px 12px;border-radius:7px;font-family:'Inter',sans-serif;font-size:13px;
 }
 
 /* ---- nav tabs ---- */
@@ -150,7 +150,7 @@ h2.section-title::before{content:"";width:4px;height:16px;background:var(--accen
 .chart-card h3{margin:0 0 14px;font-family:'Manrope',sans-serif;font-size:14px;color:var(--text-muted);font-weight:700;}
 
 /* ---- tables ---- */
-.table-wrap{background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:24px;box-shadow:0 1px 2px rgba(16,24,40,.04);}
+.table-wrap{background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow-x:auto;margin-bottom:24px;box-shadow:0 1px 2px rgba(16,24,40,.04);}
 table{width:100%;border-collapse:collapse;font-size:13.5px;}
 th{
   background:var(--surface-2);color:var(--text-muted);font-size:11.5px;
@@ -159,9 +159,10 @@ th{
 td{padding:11px 14px;border-bottom:1px solid var(--border);color:var(--text);}
 tr:last-child td{border-bottom:none;}
 tbody tr:hover{background:var(--surface-2);}
-td.num, th.num{font-family:'IBM Plex Mono',monospace;text-align:right;}
+td.num{font-family:'IBM Plex Mono',monospace;text-align:right;white-space:nowrap;}
+th.num{text-align:right;}
 
-.badge{display:inline-block;padding:3px 11px;border-radius:20px;font-size:11.5px;font-weight:600;font-family:'Inter';}
+.badge{display:inline-block;padding:3px 11px;border-radius:20px;font-size:11.5px;font-weight:600;font-family:'Inter';white-space:nowrap;}
 .badge.good{background:var(--good-bg);color:var(--good);}
 .badge.warn{background:var(--warn-bg);color:var(--warn);}
 .badge.bad{background:var(--bad-bg);color:var(--bad);}
@@ -172,7 +173,7 @@ td.num, th.num{font-family:'IBM Plex Mono',monospace;text-align:right;}
 
 /* ---- forms ---- */
 .form-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:24px;box-shadow:0 1px 2px rgba(16,24,40,.04);}
-.form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;}
+.form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;align-items:end;}
 .field label{display:block;font-size:12px;color:var(--text-muted);margin-bottom:6px;font-weight:500;}
 .field input,.field select{
   width:100%;background:var(--surface);border:1px solid var(--border);color:var(--text);
@@ -189,7 +190,7 @@ td.num, th.num{font-family:'IBM Plex Mono',monospace;text-align:right;}
 .btn.secondary:hover{filter:none;background:var(--surface-2);}
 .btn.danger{background:var(--bad);color:#fff;}
 .btn-sm{padding:5px 12px;font-size:12px;border-radius:6px;margin-top:0;}
-.del-btn{background:none;border:1px solid var(--border);color:var(--text-muted);padding:4px 10px;border-radius:6px;cursor:pointer;font-size:12px;}
+.del-btn{background:none;border:1px solid var(--border);color:var(--text-muted);padding:4px 10px;border-radius:6px;cursor:pointer;font-size:12px;white-space:nowrap;}
 .del-btn:hover{border-color:var(--bad);color:var(--bad);}
 
 .note{font-size:12.5px;color:var(--text-muted);margin:-6px 0 18px;line-height:1.55;max-width:820px;}
@@ -197,7 +198,7 @@ td.num, th.num{font-family:'IBM Plex Mono',monospace;text-align:right;}
 @media(max-width:860px){.two-col{grid-template-columns:1fr;}}
 
 /* ---- person cards (Desempenho) ---- */
-.people-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;margin-bottom:28px;}
+.people-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px;margin-bottom:28px;}
 .person-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;box-shadow:0 1px 2px rgba(16,24,40,.04);}
 .person-card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;}
 .person-card .pname{font-family:'Manrope',sans-serif;font-weight:800;font-size:16px;display:flex;align-items:center;gap:8px;}
@@ -207,7 +208,7 @@ td.num, th.num{font-family:'IBM Plex Mono',monospace;text-align:right;}
 .person-card table{font-size:12.5px;}
 .person-card th{padding:7px 10px;font-size:10.5px;}
 .person-card td{padding:7px 10px;}
-.person-card .mini-table-wrap{border:1px solid var(--border);border-radius:8px;overflow:hidden;margin-top:6px;}
+.person-card .mini-table-wrap{border:1px solid var(--border);border-radius:8px;overflow-x:auto;margin-top:6px;}
 
 /* ---- meta diária blocks (Desempenho) ---- */
 .meta-diaria-bloco{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;margin-bottom:18px;box-shadow:0 1px 2px rgba(16,24,40,.04);}
@@ -218,7 +219,7 @@ td.num, th.num{font-family:'IBM Plex Mono',monospace;text-align:right;}
 .meta-diaria-stats .stat .l{font-size:11px;color:var(--text-muted);margin-top:2px;}
 
 /* ---- clima do time ---- */
-.emoji-btn{background:var(--surface-2);border:1px solid var(--border);border-radius:10px;padding:12px 18px;font-size:26px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px;}
+.emoji-btn{background:var(--surface-2);border:1px solid var(--border);color:var(--text);border-radius:10px;padding:12px 18px;font-size:26px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px;}
 .emoji-btn span.emoji-label{font-size:11px;color:var(--text-muted);font-family:'Inter';}
 .emoji-btn:hover{border-color:var(--navy);}
 .emoji-btn.selecionado{border-color:var(--accent);background:var(--accent-light);}
@@ -234,8 +235,44 @@ td.num, th.num{font-family:'IBM Plex Mono',monospace;text-align:right;}
 .tbl-compacta th,.tbl-compacta td{padding:8px 10px;vertical-align:top;}
 .tbl-compacta td{font-size:12.5px;}
 .inp-tbl{background:var(--surface);border:1px solid var(--border);color:var(--text);padding:5px 7px;border-radius:6px;font-family:'Inter',sans-serif;font-size:12.5px;width:100%;min-width:90px;}
-.acoes{display:flex;gap:6px;flex-wrap:wrap;}
+.acoes{display:flex;gap:6px;flex-wrap:nowrap;}
+#tblEquipe .acoes{flex-wrap:wrap;}
 .dot-p{width:9px;height:9px;border-radius:50%;display:inline-block;margin-right:6px;}
+/* ---- estética (20/10/2026): nada escondido, sem quebra no meio de número, data ou horário ---- */
+th{white-space:nowrap;}
+.nw{white-space:nowrap;}
+td.num .cel-sub{white-space:normal;}
+td .cel-sub.nw,.cel-sub.nw{white-space:nowrap;}
+.charts-grid > *,.two-col > *{min-width:0;}
+.kpi-grid.kpi-4{grid-template-columns:repeat(4,minmax(0,1fr));}
+.kpi-grid.kpi-3{grid-template-columns:repeat(3,minmax(0,1fr));}
+@media(max-width:900px){.kpi-grid.kpi-4,.kpi-grid.kpi-3{grid-template-columns:repeat(2,minmax(0,1fr));}}
+@media(max-width:520px){.kpi-grid.kpi-4,.kpi-grid.kpi-3{grid-template-columns:1fr;}}
+.kpi-card .value small{font-size:16px;font-weight:500;color:var(--text-muted);}
+.kpi-card .value.texto{font-family:'Manrope',sans-serif;font-weight:800;font-size:22px;line-height:1.2;letter-spacing:-.2px;}
+.kpi-card .value.texto-longo{font-family:'Manrope',sans-serif;font-weight:700;font-size:15px;line-height:1.4;}
+.charts-grid.tabela-larga{grid-template-columns:minmax(0,1fr) minmax(0,1.45fr);}
+@media(max-width:860px){.charts-grid.tabela-larga{grid-template-columns:1fr;}}
+#presencaLista > .empty{flex:1 1 100%;}
+.cel-nome{min-width:170px;}
+.cel-texto{min-width:180px;}
+.cel-situacao{min-width:130px;}
+.cel-dem-dia{min-width:170px;text-align:left;}
+#view-demandas .form-grid{grid-template-columns:repeat(auto-fit,minmax(120px,1fr));}
+#view-demandas .form-grid .field-larga{grid-column:span 2;}
+#selIdentidade{min-width:170px;max-width:290px;}
+.field input:not([type=checkbox]):not([type=radio]),.field select{min-height:40px;}
+#dColaborador{padding-right:5px;}
+#btnTema{white-space:nowrap;}
+.month-select label{white-space:nowrap;}
+@media(max-width:600px){
+  .topbar-inner{padding:14px 16px 12px;gap:12px;}
+  .month-select{width:100%;}
+  #selIdentidade{flex:1 1 240px;min-width:0;max-width:none;}
+  #filterMonth{flex:1 1 110px;}
+  nav.tabs{padding:0 8px;}
+  main{padding:22px 16px 60px;}
+}
 </style>
 </head>
 <body>
@@ -251,7 +288,7 @@ td.num, th.num{font-family:'IBM Plex Mono',monospace;text-align:right;}
     </div>
     <div class="month-select">
       <label style="font-size:12.5px;color:var(--text-muted);">Você é:</label>
-      <select id="selIdentidade" style="min-width:170px;"></select>
+      <select id="selIdentidade"></select>
       <select id="filterMonth"></select>
       <input type="number" id="filterYear" min="2020" max="2100" style="width:90px">
       <button class="btn secondary btn-sm" id="btnTema" style="margin-top:0;">🌙 Escuro</button>
@@ -276,7 +313,7 @@ td.num, th.num{font-family:'IBM Plex Mono',monospace;text-align:right;}
   <section class="view active" id="view-dashboard">
     <h2 class="section-title">Indicadores do mês</h2>
     <p class="note">Visão geral do que a equipe entregou no mês selecionado: quanto foi produzido, se a meta foi batida, quantas demandas ficaram para trás e quantos pedidos saíram no prazo.</p>
-    <div class="kpi-grid">
+    <div class="kpi-grid kpi-4">
       <div class="kpi-card accent"><div class="label">Peças produzidas</div><div class="value" id="kpiPecas">0</div><div class="sub">no mês selecionado</div></div>
       <div class="kpi-card" id="kpiMetaPctCard"><div class="label">Meta batida no mês</div><div class="value" id="kpiMetaPct">0%</div><div class="sub">produzido vs. meta, todos os grupos</div></div>
       <div class="kpi-card good"><div class="label">Demandas concluídas</div><div class="value" id="kpiDemandasOk">0</div><div class="sub">no mês selecionado</div></div>
@@ -284,12 +321,12 @@ td.num, th.num{font-family:'IBM Plex Mono',monospace;text-align:right;}
       <div class="kpi-card good"><div class="label">Pedidos no prazo</div><div class="value" id="kpiPedidosOk">0</div><div class="sub">ver detalhes na aba Pedidos</div></div>
       <div class="kpi-card bad"><div class="label">Pedidos fora do prazo</div><div class="value" id="kpiPedidosNok">0</div><div class="sub">ver detalhes na aba Pedidos</div></div>
       <div class="kpi-card" id="kpiComparativoMesCard"><div class="label">Comparado ao mês anterior</div><div class="value" id="kpiComparativoMes">—</div><div class="sub" id="kpiComparativoMesSub">peças produzidas</div></div>
-      <div class="kpi-card" id="kpiGrupoTopCard"><div class="label">Grupo mais produzido</div><div class="value" id="kpiGrupoTop">—</div><div class="sub" id="kpiGrupoTopSub">sem produção no mês</div></div>
+      <div class="kpi-card" id="kpiGrupoTopCard"><div class="label">Grupo mais produzido</div><div class="value texto" id="kpiGrupoTop">—</div><div class="sub" id="kpiGrupoTopSub">sem produção no mês</div></div>
     </div>
 
     <h2 class="section-title">Meta combinada do mês</h2>
     <p class="note">Meta definida em Configurações → "Metas diárias de produção". Soma a produção de todas as pessoas configuradas ali. O ritmo esperado reparte a meta igualmente pelos dias úteis do mês: segunda a sexta, sem feriados nacionais, Carnaval e Corpus Christi (dias em que a produção nunca teve lançamento). Sábado trabalhado soma no produzido, mas não conta como dia útil. O dia de hoje só conta como dia fechado depois que tiver produção lançada.</p>
-    <div class="kpi-grid">
+    <div class="kpi-grid kpi-3">
       <div class="kpi-card" id="kpiMetaCombinadaCard"><div class="label" id="kpiMetaCombinadaLabel">Produzido pela equipe com meta</div><div class="value" id="kpiMetaCombinadaValor">0 / 0</div><div class="sub" id="kpiMetaCombinadaSub">0% da meta combinada do mês</div></div>
       <div class="kpi-card"><div class="label">Falta para bater a meta</div><div class="value" id="kpiMetaCombinadaFalta">0</div><div class="sub">peças até o fim do mês</div></div>
       <div class="kpi-card"><div class="label">Deveria ter produzido até hoje</div><div class="value" id="kpiMetaEsperado">—</div><div class="sub" id="kpiMetaEsperadoSub">—</div></div>
@@ -308,7 +345,7 @@ td.num, th.num{font-family:'IBM Plex Mono',monospace;text-align:right;}
 
     <h2 class="section-title">Comparativo de horas trabalhadas — Produção</h2>
     <p class="note">Compara o mês selecionado inteiro entre as pessoas de produção: total de horas, média por dia trabalhado e quantos dias cada um bateu o mínimo configurado. O total soma duas horas diferentes, separadas abaixo do número: as <strong>horas equivalentes de produção</strong> (estimativa: peças × tempo padrão de cada produto) e as <strong>horas registradas em demandas</strong> (início e fim anotados na aba Demandas).</p>
-    <div class="charts-grid">
+    <div class="charts-grid tabela-larga">
       <div class="chart-card">
         <h3>Horas totais no mês por pessoa</h3>
         <div style="height:240px;"><canvas id="chartComparativoHoras"></canvas></div>
@@ -558,8 +595,8 @@ td.num, th.num{font-family:'IBM Plex Mono',monospace;text-align:right;}
     <p class="note">Para cada colaborador, registre qual demanda ele executou, quanto tempo levou e se ficou dentro do esperado. Se atrasou porque estava fazendo outra coisa mais urgente, registre o motivo — isso ajuda a enxergar sobrecarga real, não só "não fez".</p>
     <div class="form-card">
       <div class="form-grid">
-        <div class="field"><label>Colaborador</label><select id="dColaborador"></select></div>
-        <div class="field"><label>Demanda</label><select id="dDemanda"></select></div>
+        <div class="field field-larga"><label>Colaborador</label><select id="dColaborador"></select></div>
+        <div class="field field-larga"><label>Demanda</label><select id="dDemanda"></select></div>
         <div class="field"><label>Data</label><input type="date" id="dData"></div>
         <div class="field"><label>Hora início</label><input type="time" id="dInicio"></div>
         <div class="field"><label>Hora fim</label><input type="time" id="dFim"></div>
@@ -714,7 +751,7 @@ td.num, th.num{font-family:'IBM Plex Mono',monospace;text-align:right;}
       <button class="btn secondary btn-sm" id="btnSaveMetasProducao" style="margin-top:14px;">Salvar configurações gerais</button>
     </div>
 
-    <h2 class="section-title">Meta de produção de <span id="mesEditandoLabel">—</span></h2>
+    <h2 class="section-title"><span>Meta de produção de <span id="mesEditandoLabel">—</span></span></h2>
     <p class="note"><strong>Isso vale só para o mês selecionado no topo da página</strong> — troque o mês/ano no seletor lá em cima para editar outro mês. Cada mês guarda sua própria lista de quem tem meta e seu próprio valor combinado; mudar um mês não altera os outros. Quando um mês novo ainda não foi configurado, ele começa como uma cópia do mês anterior mais recente, pra você só ajustar o que mudou.</p>
     <div class="form-card">
       <div class="form-grid">
@@ -2430,7 +2467,7 @@ function renderDashboard(){
   const pctCombinada = metaCombinada>0 ? (produzidoPessoasMeta/metaCombinada*100) : 0;
   const faltaCombinada = Math.max(0, metaCombinada - produzidoPessoasMeta);
   document.getElementById("kpiMetaCombinadaLabel").textContent = `Produzido por ${pessoasMeta.join(" + ") || "ninguém configurado"}`;
-  document.getElementById("kpiMetaCombinadaValor").textContent = `${produzidoPessoasMeta.toLocaleString("pt-BR")} / ${metaCombinada.toLocaleString("pt-BR")}`;
+  document.getElementById("kpiMetaCombinadaValor").innerHTML = `${produzidoPessoasMeta.toLocaleString("pt-BR")} <small>/ ${metaCombinada.toLocaleString("pt-BR")}</small>`;
   document.getElementById("kpiMetaCombinadaSub").textContent = `${pctCombinada.toFixed(0)}% da meta combinada do mês`;
   document.getElementById("kpiMetaCombinadaCard").className = "kpi-card " + (pctCombinada>=100 ? "good" : (pctCombinada>=80 ? "" : "bad"));
   document.getElementById("kpiMetaCombinadaFalta").textContent = faltaCombinada.toLocaleString("pt-BR");
@@ -2697,7 +2734,7 @@ function renderCapacidadeMeta(doTime, pessoasMeta, produzido, meta, pr){
       + (capTeto > 0 ? ` (${(precisa/capTeto*100).toFixed(0)}% do teto configurado)` : "");
   }
   grid.innerHTML = `
-    <div class="kpi-card ${cls}"><div class="label">Capacidade x meta</div><div class="value" style="font-size:19px;line-height:1.25;">${veredito}</div><div class="sub">${detalhe}</div></div>
+    <div class="kpi-card ${cls}"><div class="label">Capacidade x meta</div><div class="value texto">${veredito}</div><div class="sub">${detalhe}</div></div>
     <div class="kpi-card"><div class="label">Capacidade real por dia</div><div class="value">${fmt(capReal)}</div><div class="sub">peças/dia útil, no ritmo deste mês de ${esc(pessoasMeta.join(", "))}${pelaMeta.length ? `. ${esc(pelaMeta.join(", "))} pela meta diária (sem produção no mês)` : ""}</div></div>
     <div class="kpi-card"><div class="label">Teto pela configuração</div><div class="value">${capTeto > 0 ? fmt(capTeto) : "—"}</div><div class="sub">peças/dia: ${nP} pessoa(s) × ${hD}h × ${ef}%, a ${minPorPeca.toFixed(2)} min/peça (mistura de produtos do mês)</div></div>
     <div class="kpi-card ${projecao >= meta ? "good" : "bad"}"><div class="label">Projeção de fechamento</div><div class="value">${fmt(projecao)}</div><div class="sub">${(projecao/meta*100).toFixed(0)}% da meta${pr.restantes > 0 ? `, se a capacidade real se mantiver nos ${pr.restantes} dia(s) úteis restantes` : ", mês encerrado"}</div></div>`;
@@ -2759,10 +2796,17 @@ function chartOpts(){
   };
 }
 
-const PESSOA_CORES = { danielly:"#1d3557", samira:"#0f766e", arthur:"#9f1239", felipe:"#a9720c", kauan:"#6d28d9", marcos:"#0891b2", dieniffer:"#be185d" };
+const PESSOA_CORES = { danielly:"#1d3557", samira:"#0f766e", arthur:"#9f1239", felipe:"#a9720c", kauan:"#6d28d9", marcos:"#0891b2", dieniffer:"#be185d",
+  pedro:"#2563eb", vinicius:"#65a30d" };
+/* quem não está na lista ganha uma cor fixa pelo nome, em vez de todos no mesmo cinza */
+const PESSOA_CORES_EXTRA = ["#ea580c","#7c2d12","#0d9488","#c026d3","#4f46e5","#b91c1c","#4d7c0f","#0369a1"];
 function corPessoa(nome){
   const key = (nome||"").trim().split(" ")[0].toLowerCase();
-  return PESSOA_CORES[key] || "#68718a";
+  if(PESSOA_CORES[key]) return PESSOA_CORES[key];
+  if(!key) return "#68718a";
+  let h = 0;
+  for(const ch of key) h = (h*31 + ch.charCodeAt(0)) >>> 0;
+  return PESSOA_CORES_EXTRA[h % PESSOA_CORES_EXTRA.length];
 }
 const GRUPO_CORES = { Baterias:"#1d3557", Teclados:"#0f766e", Fontes:"#a9720c", Telas:"#9f1239", Diversos:"#64748b" };
 function corGrupo(nome){ return GRUPO_CORES[nome] || "#68718a"; }
@@ -2804,7 +2848,7 @@ function renderChartDiarioColab(entradas){
       plugins:{
         legend:{ display:true, position:"bottom", labels:{color:corDoTema("--text-muted"), boxWidth:12, font:{size:11} } },
         datalabels:{
-          display:true, align:"top", anchor:"end",
+          display:"auto", align:"top", anchor:"end",
           color: (ctx)=> ctx.dataset.borderColor,
           font:{size:10, weight:600},
           formatter:(v)=> v>0 ? v.toLocaleString("pt-BR") : ""
@@ -2882,10 +2926,10 @@ function renderLancamentos(){
     const mins = minutosEntre(l.inicio, l.fim);
     const ppm = mins>0 ? (l.qtd/mins) : 0;
     return `<tr>
-      <td>${formatarDataBr(l.data)}</td>
+      <td class="nw">${formatarDataBr(l.data)}</td>
       <td>${l.grupo}</td>
       <td>${l.colaborador}</td>
-      <td>${l.pedido||"—"}</td>
+      <td class="cel-texto">${l.pedido||"—"}</td>
       <td class="num">${Number(l.qtd).toLocaleString("pt-BR")}</td>
       <td class="num">${mins}</td>
       <td class="num">${ppm.toFixed(2)}</td>
@@ -2919,10 +2963,10 @@ function criarLinhaPedido(numero="", pecas=""){
   const id = "pedidoRow" + contadorLinhasPedido;
   const div = document.createElement("div");
   div.id = id;
-  div.style.cssText = "display:flex;gap:10px;margin-bottom:8px;align-items:center;";
+  div.style.cssText = "display:flex;flex-wrap:wrap;gap:10px;margin-bottom:8px;align-items:center;";
   div.innerHTML = `
-    <input type="text" placeholder="Nº do pedido" class="pedido-numero" style="flex:1;background:var(--surface);border:1px solid var(--border);color:var(--text);padding:9px 10px;border-radius:7px;font-size:14px;" value="${numero}">
-    <input type="number" min="0" placeholder="Qtd. peças" class="pedido-pecas" style="width:140px;background:var(--surface);border:1px solid var(--border);color:var(--text);padding:9px 10px;border-radius:7px;font-size:14px;" value="${pecas}">
+    <input type="text" placeholder="Nº do pedido" class="pedido-numero" style="flex:1 1 110px;min-width:0;background:var(--surface);border:1px solid var(--border);color:var(--text);padding:9px 10px;border-radius:7px;font-size:14px;" value="${numero}">
+    <input type="number" min="0" placeholder="Qtd. peças" class="pedido-pecas" style="flex:0 1 140px;width:140px;min-width:90px;background:var(--surface);border:1px solid var(--border);color:var(--text);padding:9px 10px;border-radius:7px;font-size:14px;" value="${pecas}">
     <button type="button" class="del-btn" onclick="document.getElementById('${id}').remove()">Remover</button>
   `;
   return div;
@@ -3040,7 +3084,7 @@ function renderPedidos(){
       const prazoBadge = c.dentroDoPrazo===null ? `<span class="badge" style="background:var(--surface-3);color:var(--text-muted);">sem meta</span>`
         : c.dentroDoPrazo ? `<span class="badge good">No prazo</span>` : `<span class="badge bad">Fora do prazo</span>`;
       return `<tr>
-        <td>${formatarDataBr(p.data)}</td>
+        <td class="nw">${formatarDataBr(p.data)}</td>
         <td>${nomesPedidos}</td>
         <td class="num">${c.pecasPedidos.toLocaleString("pt-BR")}</td>
         <td class="num">${Number(p.produzidas).toLocaleString("pt-BR")}</td>
@@ -3067,7 +3111,7 @@ function renderPedidos(){
     document.getElementById("kpiTempoTotal").textContent = "—";
     document.getElementById("kpiRitmo").textContent = "—";
     document.getElementById("kpiPrazo").textContent = "—";
-    document.getElementById("kpiContratacaoReal").innerHTML = `<div class="kpi-card"><div class="label">Sem dados suficientes</div><div class="value" style="font-size:15px;">Registre ao menos um dia de atendimento para calcular.</div></div>`;
+    document.getElementById("kpiContratacaoReal").innerHTML = `<div class="kpi-card"><div class="label">Sem dados suficientes</div><div class="value texto-longo">Registre ao menos um dia de atendimento para calcular.</div></div>`;
     return;
   }
 
@@ -3214,12 +3258,12 @@ function renderDemandas(){
     const semRegistro = demandasCadastradas.filter(d=>!demandasFeitas.has(d));
     const selo = !pessoa ? ` <span class="badge warn">sem cadastro</span>` : (pessoaAtiva(pessoa) ? "" : ` <span class="badge neutro">inativo</span>`);
     return `<tr>
-      <td>${esc(nome)}${selo}</td>
+      <td class="cel-nome">${esc(nome)}${selo}</td>
       <td class="num">${horas.toFixed(1)}</td>
       <td class="num">${concluidas}</td>
       <td class="num">${atrasadas}</td>
       <td class="num">${andamento}</td>
-      <td>${!pessoa ? "—" : (semRegistro.length ? `<span class="badge warn">${semRegistro.length} demanda(s): ${esc(semRegistro.join("; "))}</span>` : `<span class="badge good">tudo registrado</span>`)}</td>
+      <td>${!pessoa ? "—" : (semRegistro.length ? `<span class="badge warn">${semRegistro.length} demanda(s)</span><div class="cel-sub" style="min-width:220px;">${esc(semRegistro.join("; "))}</div>` : `<span class="badge good">tudo registrado</span>`)}</td>
     </tr>`;
   }).join("");
 
@@ -3238,7 +3282,7 @@ function renderDemandas(){
     tblTempo.innerHTML = `<tr><td colspan="4"><div class="empty"><div class="display">Sem registros no mês</div>Use o formulário acima para começar.</div></td></tr>`;
   } else {
     tblTempo.innerHTML = linhasTempo.map(l=>`
-      <tr><td>${esc(l.colaborador)}</td><td>${esc(l.demanda)}</td><td class="num">${(l.minutos/60).toFixed(1)}</td><td class="num">${l.registros}</td></tr>
+      <tr><td class="cel-nome">${esc(l.colaborador)}</td><td class="cel-texto">${esc(l.demanda)}</td><td class="num">${(l.minutos/60).toFixed(1)}</td><td class="num">${l.registros}</td></tr>
     `).join("");
   }
 
@@ -3250,9 +3294,9 @@ function renderDemandas(){
   } else {
     tblAtrasos.innerHTML = atrasos.map(d=>{
       return `<tr>
-        <td>${formatarDataBr(d.data)}</td>
-        <td>${esc(nomeCadastro(d.colaborador))}</td>
-        <td>${esc(d.demanda)}</td>
+        <td class="nw">${formatarDataBr(d.data)}</td>
+        <td class="cel-nome">${esc(nomeCadastro(d.colaborador))}</td>
+        <td class="cel-texto">${esc(d.demanda)}</td>
         <td>${esc(d.motivo||"—")}</td>
         <td><button class="del-btn" onclick="removerDemanda(${jsArg(d.id)})">Excluir</button></td>
       </tr>`;
@@ -3311,10 +3355,10 @@ function renderTabelaHorasDia(idTabela, linhas, meta){
   tbl.innerHTML = linhas.map(l=>{
     const dentro = meta>0 ? l.horas >= meta : null;
     return `<tr>
-      <td>${formatarDataBr(l.data)}</td>
+      <td class="nw">${formatarDataBr(l.data)}</td>
       <td>${esc(l.nome)}</td>
       <td class="num">${l.horasProducao.toFixed(1)}</td>
-      <td class="num">${l.horasDemandas.toFixed(1)}${l.demandas.length ? `<div class="cel-sub">${textoDemandasDia(l.demandas)}</div>` : ""}</td>
+      <td class="num">${l.horasDemandas.toFixed(1)}${l.demandas.length ? `<div class="cel-sub cel-dem-dia">${textoDemandasDia(l.demandas)}</div>` : ""}</td>
       <td class="num" style="font-weight:700;">${l.horas.toFixed(1)}</td>
       <td>${dentro===null ? "—" : (dentro ? `<span class="badge good">Ok</span>` : `<span class="badge bad">Abaixo de ${meta}h</span>`)}</td>
     </tr>`;
@@ -3359,11 +3403,11 @@ function renderDestaqueMes(entradas){
   let html = "";
   if(porPecas.length>0){
     const [nome,d] = porPecas[0];
-    html += `<div class="kpi-card good"><div class="label">🏆 Mais peças produzidas</div><div class="value">${nome}</div><div class="sub">${d.pecas.toLocaleString("pt-BR")} peças no mês</div></div>`;
+    html += `<div class="kpi-card good"><div class="label">🏆 Mais peças produzidas</div><div class="value texto">${esc(nome)}</div><div class="sub">${d.pecas.toLocaleString("pt-BR")} peças no mês</div></div>`;
   }
   if(porPeso.length>0){
     const [nome,d] = porPeso[0];
-    html += `<div class="kpi-card good"><div class="label">🏆 Mais pontos (peso produzido)</div><div class="value">${nome}</div><div class="sub">${d.peso.toFixed(1)} pontos no mês</div></div>`;
+    html += `<div class="kpi-card good"><div class="label">🏆 Mais pontos (peso produzido)</div><div class="value texto">${esc(nome)}</div><div class="sub">${d.peso.toFixed(1)} pontos no mês</div></div>`;
   }
   if(html===""){
     html = `<div class="kpi-card"><div class="label">Sem dados suficientes ainda</div><div class="sub">Lance ou importe produção de ${pessoas.join(", ")} para ver o destaque.</div></div>`;
@@ -3393,7 +3437,7 @@ function renderComparativoHoras(){
     const media = d.dias>0 ? d.totalHoras/d.dias : 0;
     return `<tr>
       <td>${nome}</td>
-      <td class="num">${d.totalHoras.toFixed(1)}<div class="cel-sub">${d.horasProducao.toFixed(1)} produção (equiv.) · ${d.horasDemandas.toFixed(1)} demandas (registradas)</div></td>
+      <td class="num">${d.totalHoras.toFixed(1)}<div class="cel-sub nw">${d.horasProducao.toFixed(1)} produção (equiv.)<br>${d.horasDemandas.toFixed(1)} demandas (registradas)</div></td>
       <td class="num">${d.dias}</td>
       <td class="num">${media.toFixed(1)}</td>
       <td class="num">${d.diasNaMeta} / ${d.dias}</td>
@@ -3486,9 +3530,9 @@ function renderTodasDemandas(entradas){
   tbl.innerHTML = lista.map(d=>{
     if(d.id === demandaEditando) return linhaEdicaoDemanda(d);
     return `<tr>
-      <td>${formatarDataBr(d.data)}</td>
-      <td>${esc(nomeCadastro(d.colaborador))}</td>
-      <td>${esc(d.demanda)}${d.motivo ? `<div class="cel-sub">${esc(d.motivo)}</div>` : ""}</td>
+      <td class="nw">${formatarDataBr(d.data)}</td>
+      <td class="cel-nome">${esc(nomeCadastro(d.colaborador))}</td>
+      <td class="cel-texto">${esc(d.demanda)}${d.motivo ? `<div class="cel-sub">${esc(d.motivo)}</div>` : ""}</td>
       <td class="num">${esc(d.inicio||"—")} – ${esc(d.fim||"…")}</td>
       <td class="num">${(minutosEntre(d.inicio,d.fim)/60).toFixed(1)}</td>
       <td>${badgeStatusDemanda(d.status)}</td>
@@ -3559,7 +3603,7 @@ function renderEmAndamento(entradas){
   }
   tbl.innerHTML = emAndamento.map(d=>{
     return `<tr>
-      <td>${formatarDataBr(d.data)}</td>
+      <td class="nw">${formatarDataBr(d.data)}</td>
       <td>${esc(nomeCadastro(d.colaborador))}</td>
       <td>${d.demanda}</td>
       <td class="num">${d.inicio||"—"}</td>
@@ -3627,17 +3671,17 @@ function renderEquipeConfig(){
     const hist = textoHistorico(historicoDaPessoa(p)) || "sem histórico";
     return `<tr style="${ativo ? "" : "opacity:.65;"}">
       <td><input type="text" value="${esc(p.nome)}" data-idx="${i}" data-field="nome" class="cfg-input-equipe"></td>
-      <td><input type="text" value="${esc(apelidosDe(p).join(", "))}" data-idx="${i}" data-field="apelidos" class="cfg-input-equipe" placeholder="login do TOTVS, nome antigo..."></td>
+      <td><input type="text" value="${esc(apelidosDe(p).join(", "))}" data-idx="${i}" data-field="apelidos" class="cfg-input-equipe" placeholder="TOTVS, nome antigo"></td>
       <td><input type="text" value="${esc(p.setor||"")}" data-idx="${i}" data-field="setor" class="cfg-input-equipe"></td>
       <td><input type="text" value="${esc(p.nivel||"")}" data-idx="${i}" data-field="nivel" class="cfg-input-equipe"></td>
-      <td><input type="text" value="${esc(p.demandas||"")}" data-idx="${i}" data-field="demandas" class="cfg-input-equipe" style="width:100%;"></td>
-      <td>${ativo ? `<span class="badge good">Ativo</span>` : `<span class="badge neutro">Inativo</span>`}<div class="cel-sub">${esc(hist)}</div></td>
+      <td><input type="text" value="${esc(p.demandas||"")}" title="${esc(p.demandas||"")}" data-idx="${i}" data-field="demandas" class="cfg-input-equipe" style="width:100%;"></td>
+      <td class="cel-situacao">${ativo ? `<span class="badge good">Ativo</span>` : `<span class="badge neutro">Inativo</span>`}<div class="cel-sub">${esc(hist).split(" · ").join("<br>")}</div></td>
       <td><div class="acoes">${ativo ? `<button class="del-btn" onclick="desativarPessoa(${i})">Desativar</button>` : `<button class="del-btn" onclick="reativarPessoa(${i})">Reativar</button>`}<button class="del-btn" onclick="removerEquipe(${i})">Excluir</button></div></td>
     </tr>`;
   }).join("");
 
   tbl.querySelectorAll(".cfg-input-equipe").forEach(inp=>{
-    const minLarg = { nome:230, apelidos:170, setor:100, nivel:140, demandas:220 }[inp.dataset.field] || 110;
+    const minLarg = { nome:230, apelidos:150, setor:100, nivel:135, demandas:180 }[inp.dataset.field] || 110;
     inp.style.cssText += "background:transparent;border:1px solid transparent;color:inherit;font-family:inherit;font-size:inherit;padding:4px 6px;border-radius:4px;width:100%;min-width:" + minLarg + "px;";
     inp.addEventListener("focus",()=> inp.style.borderColor = "var(--navy)");
     inp.addEventListener("blur",()=>{
@@ -4214,7 +4258,7 @@ function renderJustificativas(){
   }
   tbl.innerHTML = linhas.map(j=>{
     return `<tr>
-      <td>${formatarDataBr(j.data)}</td>
+      <td class="nw">${formatarDataBr(j.data)}</td>
       <td>${j.motivo}</td>
       <td>${j.metaConsiderada ? `<span class="badge good">Sim</span>` : `<span class="badge" style="background:var(--surface-3);color:var(--text-muted);">Não</span>`}</td>
       <td><button class="del-btn" onclick="removerJustificativa('${j.id}')">Excluir</button></td>
@@ -4315,7 +4359,7 @@ function renderMetaDiariaHoras(entradasEquipe){
       const avisoHtml = suspeito ? ` <span class="badge bad" title="Acima de ${state.metasProducao.horasMaxDia}h/dia — provavelmente produziu itens que outra pessoa finalizou (ex: colagem de etiqueta), vale conferir">⚠ conferir</span>` : "";
       const motivoHtml = j ? `<div style="font-size:11.5px;color:var(--text-muted);margin-top:4px;max-width:260px;">${j.motivo}</div>` : "";
       return `<tr>
-        <td>${formatarDataBr(d.data)}</td>
+        <td class="nw">${formatarDataBr(d.data)}</td>
         <td class="num">${d.pecas.toLocaleString("pt-BR")}</td>
         <td class="num">${horas.toFixed(1)}</td>
         <td class="num">${celulaDemandasDia(demsPessoa, d.data)}</td>
@@ -4398,7 +4442,7 @@ function renderClima(){
   tbl.innerHTML = linhas.map(c=>{
     const h = humorInfo(c.humor);
     return `<tr>
-      <td>${formatarDataBr(c.data)}</td>
+      <td class="nw">${formatarDataBr(c.data)}</td>
       <td>${h?h.emoji+" "+h.label:c.humor}</td>
       <td><button class="del-btn" onclick="removerClima('${c.id}')">Excluir</button></td>
     </tr>`;
@@ -4451,7 +4495,7 @@ function renderObservacoes(){
   }
   tbl.innerHTML = linhas.map(o=>{
     return `<tr>
-      <td>${formatarDataBr(o.data)}</td>
+      <td class="nw">${formatarDataBr(o.data)}</td>
       <td>${esc(o.sobre === "Equipe geral" ? o.sobre : nomeCadastro(o.sobre))}</td>
       <td>${o.texto}</td>
       <td><button class="del-btn" onclick="removerObservacao('${o.id}')">Excluir</button></td>
@@ -4515,23 +4559,23 @@ function renderResumoIndividual(entradas){
 
   const celDia = (d, dems, comDemandas)=>{
     if(!d) return "—";
-    let s = `<strong>${formatarDataCurta(d.data)}</strong><div class="cel-sub">${d.pecas.toLocaleString("pt-BR")} ${d.pecas === 1 ? "peça" : "peças"} · ${d.pontos > 0 ? d.pontos.toFixed(1) + " pts" : (d.minutos/60).toFixed(1) + " h equiv."}</div>`;
+    let s = `<strong class="nw">${formatarDataCurta(d.data)}</strong><div class="cel-sub nw">${d.pecas.toLocaleString("pt-BR")} ${d.pecas === 1 ? "peça" : "peças"} · ${d.pontos > 0 ? d.pontos.toFixed(1) + " pts" : (d.minutos/60).toFixed(1) + " h equiv."}</div>`;
     if(comDemandas){
       const doDia = dems.filter(x=>x.data===d.data);
-      if(doDia.length) s += `<div class="cel-sub">demandas: ${textoDemandasDia(doDia.map(x=>({ demanda:x.demanda, minutos:minutosEntre(x.inicio,x.fim), status:x.status })))}</div>`;
+      if(doDia.length) s += `<div class="cel-sub" style="min-width:150px;">demandas: ${textoDemandasDia(doDia.map(x=>({ demanda:x.demanda, minutos:minutosEntre(x.inicio,x.fim), status:x.status })))}</div>`;
     }
     return s;
   };
   tbl.innerHTML = linhas.map(r=>{
     const metaTxt = !r.temMeta ? `<span class="badge neutro">sem meta</span>`
-      : (r.meta ? `${r.meta.batidos}/${r.meta.dias} dias<div class="cel-sub">${r.meta.dias ? Math.round(r.meta.batidos/r.meta.dias*100) : 0}%, mínimo de ${metaH}h equiv.</div>` : "—");
+      : (r.meta ? `<span class="nw">${r.meta.batidos}/${r.meta.dias} dias</span><div class="cel-sub nw">${r.meta.dias ? Math.round(r.meta.batidos/r.meta.dias*100) : 0}%, mínimo de ${metaH}h equiv.</div>` : "—");
     return `<tr>
-      <td><span class="dot-p" style="background:${corPessoa(r.nome)}"></span><strong>${esc(r.nome)}</strong></td>
+      <td class="nw"><span class="dot-p" style="background:${corPessoa(r.nome)}"></span><strong>${esc(r.nome)}</strong></td>
       <td class="num">${r.pecas.toLocaleString("pt-BR")}</td>
       <td class="num">${r.pontos > 0 ? r.pontos.toFixed(1) : "—"}</td>
       <td class="num" title="${esc(r.modelos.dica)}">${r.modelos.txt}</td>
-      <td class="num">${(r.horasProd + r.horasDem).toFixed(1)}<div class="cel-sub">${r.horasProd.toFixed(1)} prod. equiv. · ${r.horasDem.toFixed(1)} demandas</div></td>
-      <td class="num">${r.nDias ? Math.round(r.pecas/r.nDias).toLocaleString("pt-BR") : "—"}<div class="cel-sub">peças, ${r.nDias} dia(s)</div></td>
+      <td class="num">${(r.horasProd + r.horasDem).toFixed(1)}<div class="cel-sub nw">${r.horasProd.toFixed(1)} prod. equiv.<br>${r.horasDem.toFixed(1)} demandas</div></td>
+      <td class="num">${r.nDias ? Math.round(r.pecas/r.nDias).toLocaleString("pt-BR") : "—"}<div class="cel-sub nw">peças, ${r.nDias} dia(s)</div></td>
       <td>${metaTxt}</td>
       <td>${celDia(r.melhor, r.dems, false)}</td>
       <td>${celDia(r.pior, r.dems, true)}</td>
@@ -4611,7 +4655,7 @@ function renderDesempenho(){
           <div class="pname"><span class="dot" style="background:${corPessoa(nome)}"></span>${nome}</div>
         </div>
         <div class="ptotal">${totalProduzido.toLocaleString("pt-BR")}</div>
-        <div class="psub" title="${esc(mtCard.dica)}">peças produzidas no mês | <strong>${mtCard.txt}</strong> modelos diferentes · ${linhasPessoa.length} grupo(s) de produto</div>
+        <div class="psub" title="${esc(mtCard.dica)}">peças produzidas no mês<br><strong>${mtCard.txt}</strong> modelos diferentes · ${linhasPessoa.length} grupo(s) de produto</div>
         ${barraHtml}
         <div class="mini-table-wrap">
           <table>
@@ -4797,7 +4841,7 @@ function renderGruposFinos(){
     const fator = (uh>0 && maxUh>0) ? maxUh/uh : 0;
     const peso = (uh>0 && fator>0) ? fator/uh : 0;
     return `<tr>
-      <td><input type="text" value="${g.codigo}" data-idx="${i}" data-field="codigo" class="cfg-input-fino" style="text-transform:uppercase;font-family:'JetBrains Mono',monospace;"></td>
+      <td><input type="text" value="${g.codigo}" data-idx="${i}" data-field="codigo" class="cfg-input-fino" style="text-transform:uppercase;"></td>
       <td><input type="text" value="${g.descricao}" data-idx="${i}" data-field="descricao" class="cfg-input-fino"></td>
       <td><select data-idx="${i}" data-field="macroGrupo" class="cfg-input-fino">${nomesGrupos.map(n=>`<option value="${n}" ${n===g.macroGrupo?"selected":""}>${n}</option>`).join("")}</select></td>
       <td class="num"><input type="number" value="${g.unidadesRef}" data-idx="${i}" data-field="unidadesRef" class="cfg-input-fino" style="text-align:right"></td>
@@ -4810,7 +4854,9 @@ function renderGruposFinos(){
   }).join("");
 
   tbl.querySelectorAll(".cfg-input-fino").forEach(inp=>{
-    inp.style.cssText += "background:transparent;border:1px solid transparent;color:inherit;font-family:inherit;font-size:inherit;padding:4px 6px;border-radius:4px;width:100%;";
+    const minFino = { codigo:80, descricao:290, macroGrupo:115, unidadesRef:80, minutosRef:80 }[inp.dataset.field] || 80;
+    inp.style.cssText += "background:transparent;border:1px solid transparent;color:inherit;font-family:inherit;font-size:inherit;padding:4px 6px;border-radius:4px;width:100%;min-width:" + minFino + "px;";
+    if(inp.dataset.field === "codigo") inp.style.fontFamily = "'IBM Plex Mono',monospace";
     const evento = inp.tagName === "SELECT" ? "change" : "blur";
     inp.addEventListener("focus",()=> inp.style.borderColor = "var(--accent)");
     inp.addEventListener(evento,()=>{
