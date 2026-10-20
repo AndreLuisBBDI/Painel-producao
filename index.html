@@ -225,6 +225,17 @@ td.num, th.num{font-family:'IBM Plex Mono',monospace;text-align:right;}
 
 .empty{text-align:center;padding:40px 20px;color:var(--text-muted);}
 .empty .display{font-size:17px;color:var(--text);margin-bottom:6px;font-weight:700;}
+/* ---- melhorias de 20/10/2026: ritmo da meta, resumo individual, cadastro ---- */
+.kpi-card.warn::before{background:var(--warn);}
+.kpi-card.warn .value{color:var(--warn);}
+.badge.neutro{background:var(--surface-3);color:var(--text-muted);}
+.cel-sub{font-size:11px;color:var(--text-muted);margin-top:2px;font-family:'Inter',sans-serif;font-weight:400;line-height:1.35;}
+.table-wrap.rolavel{overflow-x:auto;}
+.tbl-compacta th,.tbl-compacta td{padding:8px 10px;vertical-align:top;}
+.tbl-compacta td{font-size:12.5px;}
+.inp-tbl{background:var(--surface);border:1px solid var(--border);color:var(--text);padding:5px 7px;border-radius:6px;font-family:'Inter',sans-serif;font-size:12.5px;width:100%;min-width:90px;}
+.acoes{display:flex;gap:6px;flex-wrap:wrap;}
+.dot-p{width:9px;height:9px;border-radius:50%;display:inline-block;margin-right:6px;}
 </style>
 </head>
 <body>
@@ -273,21 +284,30 @@ td.num, th.num{font-family:'IBM Plex Mono',monospace;text-align:right;}
       <div class="kpi-card good"><div class="label">Pedidos no prazo</div><div class="value" id="kpiPedidosOk">0</div><div class="sub">ver detalhes na aba Pedidos</div></div>
       <div class="kpi-card bad"><div class="label">Pedidos fora do prazo</div><div class="value" id="kpiPedidosNok">0</div><div class="sub">ver detalhes na aba Pedidos</div></div>
       <div class="kpi-card" id="kpiComparativoMesCard"><div class="label">Comparado ao mês anterior</div><div class="value" id="kpiComparativoMes">—</div><div class="sub" id="kpiComparativoMesSub">peças produzidas</div></div>
+      <div class="kpi-card" id="kpiGrupoTopCard"><div class="label">Grupo mais produzido</div><div class="value" id="kpiGrupoTop">—</div><div class="sub" id="kpiGrupoTopSub">sem produção no mês</div></div>
     </div>
 
     <h2 class="section-title">Meta combinada do mês</h2>
-    <p class="note">Meta definida em Configurações → "Metas diárias de produção". Soma a produção de todas as pessoas configuradas ali.</p>
+    <p class="note">Meta definida em Configurações → "Metas diárias de produção". Soma a produção de todas as pessoas configuradas ali. O ritmo esperado reparte a meta igualmente pelos dias úteis do mês: segunda a sexta, sem feriados nacionais, Carnaval e Corpus Christi (dias em que a produção nunca teve lançamento). Sábado trabalhado soma no produzido, mas não conta como dia útil. O dia de hoje só conta como dia fechado depois que tiver produção lançada.</p>
     <div class="kpi-grid">
       <div class="kpi-card" id="kpiMetaCombinadaCard"><div class="label" id="kpiMetaCombinadaLabel">Produzido pela equipe com meta</div><div class="value" id="kpiMetaCombinadaValor">0 / 0</div><div class="sub" id="kpiMetaCombinadaSub">0% da meta combinada do mês</div></div>
-      <div class="kpi-card"><div class="label">Falta para bater a meta</div><div class="value" id="kpiMetaCombinadaFalta">0</div><div class="sub">peças, no ritmo atual</div></div>
+      <div class="kpi-card"><div class="label">Falta para bater a meta</div><div class="value" id="kpiMetaCombinadaFalta">0</div><div class="sub">peças até o fim do mês</div></div>
+      <div class="kpi-card"><div class="label">Deveria ter produzido até hoje</div><div class="value" id="kpiMetaEsperado">—</div><div class="sub" id="kpiMetaEsperadoSub">—</div></div>
+      <div class="kpi-card" id="kpiMetaRitmoCard"><div class="label" id="kpiMetaRitmoLabel">Adiantados ou atrasados</div><div class="value" id="kpiMetaRitmo">—</div><div class="sub" id="kpiMetaRitmoSub">—</div></div>
+      <div class="kpi-card"><div class="label">Dias úteis restantes</div><div class="value" id="kpiDiasRestantes">—</div><div class="sub" id="kpiDiasRestantesSub">—</div></div>
+      <div class="kpi-card" id="kpiPorDiaCard"><div class="label">Precisa produzir por dia</div><div class="value" id="kpiPorDia">—</div><div class="sub" id="kpiPorDiaSub">—</div></div>
     </div>
+
+    <h2 class="section-title">Capacidade da equipe x meta</h2>
+    <p class="note">Compara o que falta para a meta com o que a equipe consegue entregar nos dias úteis que restam. A <strong>capacidade real</strong> é o ritmo que cada pessoa com meta teve neste mês (peças por dia trabalhado). Quem ainda não produziu no mês entra pela meta diária. O <strong>teto pela configuração</strong> usa Configurações → Capacidade da equipe (pessoas × horas/dia × eficiência), convertido em peças pelo tempo padrão dos produtos feitos no mês. Até 90% da capacidade real: suficiente. De 90% a 100%: perto do limite. Acima de 100%: a meta passa da capacidade.</p>
+    <div class="kpi-grid" id="capacidadeMetaGrid"></div>
 
     <h2 class="section-title">Destaque do mês</h2>
     <p class="note">Quem mais entregou entre quem tem meta de produção — em peças e em pontos (peso produzido, que já pesa a dificuldade de cada produto).</p>
     <div class="kpi-grid" id="destaqueMesGrid"></div>
 
     <h2 class="section-title">Comparativo de horas trabalhadas — Produção</h2>
-    <p class="note">Compara o mês selecionado inteiro entre as pessoas de produção — total de horas, média por dia trabalhado e quantos dias cada um bateu o mínimo configurado.</p>
+    <p class="note">Compara o mês selecionado inteiro entre as pessoas de produção: total de horas, média por dia trabalhado e quantos dias cada um bateu o mínimo configurado. O total soma duas horas diferentes, separadas abaixo do número: as <strong>horas equivalentes de produção</strong> (estimativa: peças × tempo padrão de cada produto) e as <strong>horas registradas em demandas</strong> (início e fim anotados na aba Demandas).</p>
     <div class="charts-grid">
       <div class="chart-card">
         <h3>Horas totais no mês por pessoa</h3>
@@ -485,6 +505,15 @@ td.num, th.num{font-family:'IBM Plex Mono',monospace;text-align:right;}
       </table>
     </div>
 
+    <h2 class="section-title">Resumo individual do mês</h2>
+    <p class="note">Uma linha por pessoa da equipe dos painéis. <strong>Pontos</strong> é o peso produzido (cada peça vale conforme a dificuldade do produto, ver Configurações → Pesos por grupo). <strong>Modelos</strong> são códigos de produto diferentes, não peças. <strong>Horas</strong> = horas equivalentes de produção + horas registradas em demandas. <strong>Meta cumprida</strong> conta os dias que bateram o mínimo de horas equivalentes, como no bloco "Cumprimento da meta diária". Melhor e pior dia são escolhidos pelos pontos, não só pelas peças, e o pior dia mostra as demandas registradas nele.</p>
+    <div class="table-wrap rolavel">
+      <table class="tbl-compacta">
+        <thead><tr><th>Colaborador</th><th class="num">Peças</th><th class="num">Pontos</th><th class="num">Modelos</th><th class="num">Horas</th><th class="num">Média/dia</th><th>Meta cumprida</th><th>Melhor dia</th><th>Pior dia</th></tr></thead>
+        <tbody id="tblResumoIndividual"></tbody>
+      </table>
+    </div>
+
     <h2 class="section-title">Desempenho por colaborador</h2>
     <p class="note">Cada card é uma pessoa. A meta é estimada dividindo a meta do grupo (editável no Painel → "Meta de produção por grupo") pelo número de colaboradores <strong>com meta</strong> que produziram nele no mês. Meta e status só aparecem para quem está em Configurações → "Quem tem meta de produção" (hoje: Arthur, Felipe e Kauan) — Danielly e Samira aparecem com as peças produzidas, mas sem cobrança de meta, já que cuidam de separação e só produzem em apoio.</p>
     <div class="people-grid" id="gridDesempenho"></div>
@@ -559,6 +588,18 @@ td.num, th.num{font-family:'IBM Plex Mono',monospace;text-align:right;}
       </table>
     </div>
 
+    <h2 class="section-title">Demandas registradas no mês</h2>
+    <p class="note">Todas as demandas do mês selecionado: concluídas, em andamento ou atrasadas. "Editar" corrige data, pessoa, demanda, horários, status e motivo. "Excluir" pede confirmação. As duas ações ficam registradas na aba Logs.</p>
+    <div class="form-card" style="margin-bottom:16px;">
+      <div class="field" style="max-width:320px;"><label>Colaborador</label><select id="filtroColabDemandas"></select></div>
+    </div>
+    <div class="table-wrap rolavel">
+      <table class="tbl-compacta">
+        <thead><tr><th>Data</th><th>Colaborador</th><th>Demanda</th><th class="num">Horário</th><th class="num">Horas</th><th>Status</th><th></th></tr></thead>
+        <tbody id="tblTodasDemandas"></tbody>
+      </table>
+    </div>
+
     <h2 class="section-title">Resumo por colaborador (mês selecionado)</h2>
     <div class="table-wrap">
       <table>
@@ -584,13 +625,13 @@ td.num, th.num{font-family:'IBM Plex Mono',monospace;text-align:right;}
     </div>
 
     <h2 class="section-title">Horas trabalhadas por dia — Produção</h2>
-    <p class="note">Calculado automaticamente — não precisa preencher nada manualmente. Para cada peça lançada ou importada, o sistema estima o tempo gasto usando o tempo padrão do produto (mesmo cálculo do "Cumprimento da meta diária"), e soma o tempo de Demandas registradas nesta aba. Compara com o mínimo configurado em Configurações → Metas diárias de produção (hoje: <span id="metaHorasRef">—</span>h/dia).</p>
+    <p class="note">Calculado automaticamente — não precisa preencher nada manualmente. Para cada peça lançada ou importada, o sistema estima o tempo gasto usando o tempo padrão do produto (mesmo cálculo do "Cumprimento da meta diária"), e soma o tempo de Demandas registradas nesta aba. As duas horas ficam em colunas separadas: <strong>horas equivalentes</strong> são uma estimativa (peças × tempo padrão), <strong>horas registradas</strong> são o início e o fim anotados em cada demanda. O total é o que se compara com o mínimo. Compara com o mínimo configurado em Configurações → Metas diárias de produção (hoje: <span id="metaHorasRef">—</span>h/dia).</p>
     <div class="form-card" style="margin-bottom:16px;">
       <div class="field" style="max-width:220px;"><label>Ver um dia específico (opcional)</label><input type="date" id="filtroDiaHorasProducao"></div>
     </div>
     <div class="table-wrap">
       <table>
-        <thead><tr><th>Data</th><th>Colaborador</th><th class="num">Horas registradas</th><th>Status</th></tr></thead>
+        <thead><tr><th>Data</th><th>Colaborador</th><th class="num">Produção (h equivalentes)</th><th class="num">Demandas (h registradas)</th><th class="num">Total</th><th>Status</th></tr></thead>
         <tbody id="tblHorasDiaProducao"></tbody>
       </table>
     </div>
@@ -602,7 +643,7 @@ td.num, th.num{font-family:'IBM Plex Mono',monospace;text-align:right;}
     </div>
     <div class="table-wrap">
       <table>
-        <thead><tr><th>Data</th><th>Colaborador</th><th class="num">Horas registradas</th><th>Status</th></tr></thead>
+        <thead><tr><th>Data</th><th>Colaborador</th><th class="num">Produção (h equivalentes)</th><th class="num">Demandas (h registradas)</th><th class="num">Total</th><th>Status</th></tr></thead>
         <tbody id="tblHorasDiaGestao"></tbody>
       </table>
     </div>
@@ -611,14 +652,18 @@ td.num, th.num{font-family:'IBM Plex Mono',monospace;text-align:right;}
   <!-- =============== CONFIG =============== -->
   <section class="view" id="view-config">
     <h2 class="section-title">Equipe e demandas de cada um</h2>
-    <p class="note">Cadastre aqui as demandas fixas de cada colaborador (separadas por vírgula) — isso alimenta o seletor de demanda na aba Demandas e mostra quais demandas ainda não tiveram nenhum registro no mês.</p>
-    <div class="table-wrap">
-      <table>
-        <thead><tr><th>Nome</th><th>Setor</th><th>Nível</th><th>Demandas (separadas por vírgula)</th><th></th></tr></thead>
+    <p class="note">Cadastre aqui as demandas fixas de cada colaborador (separadas por vírgula) — isso alimenta o seletor de demanda na aba Demandas e mostra quais demandas ainda não tiveram nenhum registro no mês. <strong>Outros nomes</strong> são os jeitos como a mesma pessoa aparece nos registros: o login do TOTVS ("Pedro" para pedro.silva) ou um nome antigo. Trocar o nome não perde nada: o nome anterior passa para "outros nomes" e os registros continuam dela. <strong>Desativar</strong> tira a pessoa das listas de escolha ("Você é", Demandas, Observações) e mantém todo o histórico. <strong>Excluir</strong> só é possível para quem não tem nenhum registro; com histórico, o painel oferece desativar.</p>
+    <div class="table-wrap rolavel">
+      <table class="tbl-compacta">
+        <thead><tr><th>Nome</th><th>Outros nomes</th><th>Setor</th><th>Nível</th><th>Demandas (separadas por vírgula)</th><th>Situação</th><th></th></tr></thead>
         <tbody id="tblEquipe"></tbody>
       </table>
     </div>
     <button class="btn secondary btn-sm" id="btnAddEquipe" style="margin-bottom:24px;">+ Adicionar colaborador</button>
+
+    <h2 class="section-title">Nomes repetidos ou sem cadastro</h2>
+    <p class="note">Corrige nome duplicado sem alterar nenhum registro: juntar só acrescenta um "outro nome" à pessoa certa.</p>
+    <div class="form-card" id="blocoNomesSoltos"></div>
 
     <h2 class="section-title">Pesos por grupo de produto (TOTVS)</h2>
     <p class="note">Mesma lógica da sua planilha: informe Unidades e Minutos de referência (um teste cronometrado) para cada código de grupo do TOTVS. O sistema calcula Unidades/hora, o Fator (relativo ao grupo mais rápido) e o Peso por unidade — usado para calcular o "peso produzido" de cada colaborador. Grupo macro é o grupo (Baterias/Teclados/Fontes/Telas/Diversos) que esse código representa nos outros gráficos.</p>
@@ -773,17 +818,88 @@ try{ if(window.Chart && window.ChartDataLabels) Chart.register(ChartDataLabels);
 ============================================================ */
 const IDENTIDADE_KEY = "painelProducaoIdentidade";
 
+/* ============================================================
+   PESSOAS — um cadastro, vários nomes
+   ============================================================
+   A mesma pessoa aparece com nomes diferentes conforme a origem: o TOTVS
+   grava o login ("felipe.gomes" vira "Felipe"), o cadastro guarda o nome
+   completo e cada demanda guarda o nome que estava no cadastro no dia do
+   registro ("Pedro Henrique" e, depois, "Pedro Henrique Rodrigues da
+   Silva"). Nenhum registro é reescrito — reescrever o colaborador de um
+   lançamento importado mudaria o id dele e a fusão com a nuvem o
+   duplicaria. Quem diz quem é quem é o cadastro, nesta ordem: o nome, os
+   "outros nomes" (apelidos) e, por último, o primeiro nome, só quando um
+   único cadastro tem aquele primeiro nome. Os campos novos (apelidos,
+   ativo) não ganham valor padrão em migrarEstado: ausente é "sem apelidos"
+   e "ativo", e assim um PC com a versão antiga não vê diferença à toa. */
+function normNome(s){
+  return String(s == null ? "" : s).normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+    .trim().replace(/\s+/g, " ").toLowerCase();
+}
+function pessoaAtiva(p){ return !!p && p.ativo !== false; }
+function apelidosDe(p){ return (p && Array.isArray(p.apelidos)) ? p.apelidos : []; }
+
+let pessoasCache = null;
+function pessoasZerarCache(){ pessoasCache = null; }
+function pessoaDoNome(nome){
+  const n = normNome(nome);
+  if(!n) return null;
+  const eq = Array.isArray(state.equipe) ? state.equipe : [];
+  if(!pessoasCache || pessoasCache.ref !== eq) pessoasCache = { ref:eq, mapa:new Map() };
+  if(pessoasCache.mapa.has(n)) return pessoasCache.mapa.get(n);
+  let p = eq.find(x=>normNome(x.nome) === n)
+       || eq.find(x=>apelidosDe(x).some(a=>normNome(a) === n))
+       || null;
+  if(!p){
+    const pn = n.split(" ")[0];
+    const mesmos = eq.filter(x=>normNome(x.nome).split(" ")[0] === pn);
+    if(mesmos.length === 1) p = mesmos[0];
+  }
+  pessoasCache.mapa.set(n, p);
+  return p;
+}
+/* nome para mostrar: o do cadastro, quando a pessoa é conhecida */
+function nomeCadastro(nome){
+  const p = pessoaDoNome(nome);
+  return p ? p.nome : nome;
+}
+/* Dois nomes são a mesma pessoa? Sem cadastro para nenhum dos dois vale o
+   primeiro nome, que era a regra do painel antes do cadastro. */
+function mesmaPessoa(a, b){
+  if(normNome(a) === normNome(b)) return true;
+  const pa = pessoaDoNome(a), pb = pessoaDoNome(b);
+  if(pa || pb) return pa === pb;
+  return normNome(primeiroNome(a)) === normNome(primeiroNome(b));
+}
+
+/* Um nome por pessoa no "Você é": o do cadastro. O "Felipe" da equipe dos
+   painéis não entra de novo ao lado de "Felipe Gomes da Silva", porque é
+   a mesma pessoa. Inativo não aparece: desativar é tirar o acesso. */
 function nomesEquipeCompleta(){
-  const nomes = new Set();
-  state.equipe.forEach(p=>nomes.add(p.nome));
-  state.equipeProducao.forEach(n=>nomes.add(n));
-  return Array.from(nomes);
+  const nomes = [], vistos = new Set();
+  function por(n){
+    const k = normNome(n);
+    if(!k || vistos.has(k)) return;
+    vistos.add(k); nomes.push(n);
+  }
+  state.equipe.filter(pessoaAtiva).forEach(p=>por(p.nome));
+  state.equipeProducao.forEach(n=>{ if(!pessoaDoNome(n)) por(n); });
+  return nomes;
 }
 
 function renderIdentidade(){
   const sel = document.getElementById("selIdentidade");
-  const atual = localStorage.getItem(IDENTIDADE_KEY) || "";
-  sel.innerHTML = `<option value="">Selecione seu nome...</option>` + nomesEquipeCompleta().map(n=>`<option value="${n}" ${n===atual?"selected":""}>${n}</option>`).join("");
+  let atual = localStorage.getItem(IDENTIDADE_KEY) || "";
+  if(atual){
+    const p = pessoaDoNome(atual);
+    /* desativada noutro PC: perde o acesso aqui também */
+    if(p && !pessoaAtiva(p)){ localStorage.removeItem(IDENTIDADE_KEY); atual = ""; }
+    /* renomeada, ou escolhida antes pelo primeiro nome: passa ao nome do cadastro */
+    else if(p && p.nome !== atual){ localStorage.setItem(IDENTIDADE_KEY, p.nome); atual = p.nome; }
+  }
+  const nomes = nomesEquipeCompleta();
+  if(atual && !nomes.includes(atual)) nomes.push(atual);   // fora do cadastro: continua escolhido
+  sel.innerHTML = `<option value="">Selecione seu nome...</option>` + nomes.map(n=>`<option value="${esc(n)}" ${n===atual?"selected":""}>${esc(n)}</option>`).join("");
   aplicarIdentidadeNosFormularios();
 }
 
@@ -973,6 +1089,7 @@ function migrarEstado(parsed){
 }
 
 function saveState(){
+  pessoasZerarCache();
   try{
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
   }catch(e){
@@ -1433,7 +1550,9 @@ const LOG_ROTULOS = {
   "backup-restaurado":"Backup restaurado",
   "nuvem-sobreposta":"Nuvem sobreposta",
   "capacidade":"Capacidade",
-  "metas":"Metas"
+  "metas":"Metas",
+  "pessoa":"Cadastro de pessoas",
+  "demanda":"Demanda editada"
 };
 /* hasOwnProperty e não LOG_ROTULOS[a]: uma ação gravada como "__proto__"
    devolveria um objeto em vez de texto. */
@@ -2301,6 +2420,8 @@ function renderDashboard(){
   document.getElementById("kpiPedidosOk").textContent = pedidosOk;
   document.getElementById("kpiPedidosNok").textContent = pedidosNok;
 
+  renderGrupoMaisProduzido(entradas, totalPecas);
+
   /* meta combinada do mês (pessoas com meta configuradas naquele mês) */
   const cfgMes = configMesSelecionado();
   const pessoasMeta = cfgMes.pessoasComMeta;
@@ -2313,6 +2434,7 @@ function renderDashboard(){
   document.getElementById("kpiMetaCombinadaSub").textContent = `${pctCombinada.toFixed(0)}% da meta combinada do mês`;
   document.getElementById("kpiMetaCombinadaCard").className = "kpi-card " + (pctCombinada>=100 ? "good" : (pctCombinada>=80 ? "" : "bad"));
   document.getElementById("kpiMetaCombinadaFalta").textContent = faltaCombinada.toLocaleString("pt-BR");
+  renderRitmoMeta(entradas, pessoasMeta, produzidoPessoasMeta, metaCombinada);
 
   /* gráfico diário */
   const dias = {};
@@ -2395,6 +2517,229 @@ function renderDashboard(){
       renderAll();
     });
   });
+}
+
+/* ============================================================
+   RITMO DA META, CAPACIDADE, GRUPO DO MÊS E MODELOS
+============================================================ */
+function isoLocal(d){
+  return d.getFullYear() + "-" + String(d.getMonth()+1).padStart(2,"0") + "-" + String(d.getDate()).padStart(2,"0");
+}
+function formatarDataCurta(iso){
+  if(!iso) return "—";
+  const [, m, d] = iso.split("-");
+  return `${d}/${m} ${abrevDiaSemana(iso)}`;
+}
+/* Feriados em que a produção não trabalha. Conferido nos lançamentos de
+   jan a out/2026: nenhuma peça nos feriados nacionais, no Carnaval nem no
+   Corpus Christi; 08/09 e a segunda da Penha (feriados de Vitória) tiveram
+   produção normal, então feriado municipal não entra. */
+function feriadosDoAno(ano){
+  /* Páscoa pelo algoritmo de Meeus/Jones/Butcher */
+  const a = ano%19, b = Math.floor(ano/100), c = ano%100, d = Math.floor(b/4), e = b%4;
+  const f = Math.floor((b+8)/25), g = Math.floor((b-f+1)/3), h = (19*a+b-d-g+15)%30;
+  const i = Math.floor(c/4), k = c%4, l = (32+2*e+2*i-h-k)%7, m = Math.floor((a+11*h+22*l)/451);
+  const mesP = Math.floor((h+l-7*m+114)/31), diaP = ((h+l-7*m+114)%31)+1;
+  const pascoa = n => isoLocal(new Date(ano, mesP-1, diaP+n));
+  return new Map([
+    [ano+"-01-01","Confraternização Universal"], [pascoa(-48),"Carnaval"], [pascoa(-47),"Carnaval"],
+    [pascoa(-2),"Sexta-feira Santa"], [ano+"-04-21","Tiradentes"], [ano+"-05-01","Dia do Trabalho"],
+    [pascoa(60),"Corpus Christi"], [ano+"-09-07","Independência"], [ano+"-10-12","Nossa Senhora Aparecida"],
+    [ano+"-11-02","Finados"], [ano+"-11-15","Proclamação da República"], [ano+"-11-20","Consciência Negra"],
+    [ano+"-12-25","Natal"]
+  ]);
+}
+/* segunda a sexta do mês, sem os feriados acima */
+function diasUteisDoMes(ano, mes){
+  const dias = [];
+  const feriados = feriadosDoAno(ano);
+  const d = new Date(ano, mes-1, 1);
+  while(d.getMonth() === mes-1){
+    const s = d.getDay();
+    if(s !== 0 && s !== 6 && !feriados.has(isoLocal(d))) dias.push(isoLocal(d));
+    d.setDate(d.getDate()+1);
+  }
+  return dias;
+}
+/* Quantos dias úteis do mês já fecharam. Hoje só conta se já tiver
+   produção lançada: sem isso o "deveria ter produzido" cobraria um dia
+   inteiro às 8h da manhã. Mês passado fecha todos; mês futuro, nenhum. */
+function progressoDiasUteis(ano, mes, datasComProducao){
+  const dias = diasUteisDoMes(ano, mes);
+  const hoje = isoLocal(new Date());
+  const hojeFechado = !!(datasComProducao && datasComProducao.has(hoje));
+  const fechados = dias.filter(d => d < hoje || (d === hoje && hojeFechado));
+  const feriados = feriadosDoAno(ano);
+  const prefixo = ano + "-" + String(mes).padStart(2,"0");
+  const feriadosMes = Array.from(feriados.entries()).filter(([d])=>d.startsWith(prefixo)
+    && new Date(d+"T12:00").getDay() !== 0 && new Date(d+"T12:00").getDay() !== 6)
+    .map(([d,n])=> d.slice(8) + "/" + d.slice(5,7) + " " + n);
+  return { total:dias.length, decorridos:fechados.length, restantes:dias.length - fechados.length,
+           ateDia: fechados.length ? fechados[fechados.length-1] : null, feriadosMes };
+}
+
+function renderGrupoMaisProduzido(entradas, totalPecas){
+  const porGrupo = {};
+  entradas.forEach(l=>{ porGrupo[l.grupo] = (porGrupo[l.grupo]||0) + Number(l.qtd||0); });
+  const top = Object.entries(porGrupo).sort((a,b)=>b[1]-a[1])[0];
+  const v = document.getElementById("kpiGrupoTop"), s = document.getElementById("kpiGrupoTopSub");
+  if(!top || totalPecas <= 0){ v.textContent = "—"; s.textContent = "sem produção no mês"; return; }
+  v.textContent = top[0];
+  s.textContent = `${(top[1]/totalPecas*100).toFixed(0)}% da produção do mês (${top[1].toLocaleString("pt-BR")} peças)`;
+}
+
+function renderRitmoMeta(entradas, pessoasMeta, produzido, meta){
+  const mes = parseInt(document.getElementById("filterMonth").value);
+  const ano = parseInt(document.getElementById("filterYear").value);
+  const doTime = entradas.filter(l=> contaParaMeta(l, pessoasMeta));
+  const pr = progressoDiasUteis(ano, mes, new Set(doTime.map(l=>l.data)));
+  const fmt = n => Math.round(n).toLocaleString("pt-BR");
+  const txt = (id, t) => { document.getElementById(id).textContent = t; };
+  const cor = (id, cls) => { document.getElementById(id).className = "kpi-card" + (cls ? " " + cls : ""); };
+  const temMeta = meta > 0;
+  const falta = Math.max(0, meta - produzido);
+  const esperado = (temMeta && pr.total > 0) ? meta*pr.decorridos/pr.total : 0;
+
+  txt("kpiMetaEsperado", temMeta ? fmt(esperado) : "—");
+  txt("kpiMetaEsperadoSub", !temMeta ? "configure a meta combinada do mês"
+    : (pr.decorridos > 0 ? `peças em ${pr.decorridos} de ${pr.total} dias úteis, até ${formatarDataCurta(pr.ateDia)}`
+                         : `nenhum dia útil fechado ainda (${pr.total} no mês)`));
+
+  if(temMeta && pr.decorridos > 0){
+    const dif = produzido - esperado;
+    const pct = esperado > 0 ? dif/esperado*100 : 0;
+    txt("kpiMetaRitmoLabel", dif >= 0 ? "Adiantados" : "Atrasados");
+    txt("kpiMetaRitmo", (dif >= 0 ? "+" : "−") + fmt(Math.abs(dif)));
+    txt("kpiMetaRitmoSub", `peças ${dif >= 0 ? "à frente do" : "atrás do"} ritmo da meta (${dif >= 0 ? "+" : "−"}${Math.abs(pct).toFixed(0)}%)`);
+    cor("kpiMetaRitmoCard", dif >= 0 ? "good" : (pct >= -5 ? "warn" : "bad"));
+  } else {
+    txt("kpiMetaRitmoLabel", "Adiantados ou atrasados");
+    txt("kpiMetaRitmo", "—");
+    txt("kpiMetaRitmoSub", temMeta ? "aparece depois do primeiro dia útil fechado" : "sem meta configurada");
+    cor("kpiMetaRitmoCard", "");
+  }
+
+  txt("kpiDiasRestantes", String(pr.restantes));
+  txt("kpiDiasRestantesSub", `de ${pr.total} dias úteis no mês` + (pr.feriadosMes.length ? `, sem ${pr.feriadosMes.join(", ")}` : " (seg a sex)"));
+
+  const mediaAtual = pr.decorridos > 0 ? produzido/pr.decorridos : 0;
+  if(temMeta && falta === 0){
+    txt("kpiPorDia", "0"); txt("kpiPorDiaSub", "meta já batida"); cor("kpiPorDiaCard", "good");
+  } else if(temMeta && pr.restantes > 0){
+    const porDia = falta/pr.restantes;
+    txt("kpiPorDia", fmt(porDia));
+    txt("kpiPorDiaSub", pr.decorridos > 0 ? `peças/dia útil. Média até agora: ${fmt(mediaAtual)}/dia` : "peças/dia útil até o fim do mês");
+    cor("kpiPorDiaCard", (pr.decorridos > 0 && porDia > mediaAtual) ? "bad" : "");
+  } else {
+    txt("kpiPorDia", "—");
+    txt("kpiPorDiaSub", temMeta ? "não há mais dias úteis no mês" : "sem meta configurada");
+    cor("kpiPorDiaCard", "");
+  }
+  renderCapacidadeMeta(doTime, pessoasMeta, produzido, meta, pr);
+}
+
+/* Capacidade em peças por dia útil, de dois jeitos:
+   - real: o que cada pessoa com meta entregou por dia trabalhado neste
+     mês. Quem ainda não produziu no mês entra com a meta diária dela;
+   - teto da configuração: pessoas × horas/dia × eficiência (Configurações
+     → Capacidade da equipe), convertido em peças pelo tempo padrão da
+     mistura de produtos que o time fez no mês.
+   O veredito usa a real, que já desconta demandas, faltas e o resto do dia
+   a dia. O teto fica ao lado como referência. */
+function renderCapacidadeMeta(doTime, pessoasMeta, produzido, meta, pr){
+  const grid = document.getElementById("capacidadeMetaGrid");
+  const fmt = n => Math.round(n).toLocaleString("pt-BR");
+  if(!(meta > 0) || pessoasMeta.length === 0){
+    grid.innerHTML = `<div class="kpi-card"><div class="label">Sem meta combinada em ${esc(nomeMesSelecionado())}</div><div class="sub">Defina quem tem meta e a meta combinada em Configurações → "Meta de produção" para comparar com a capacidade.</div></div>`;
+    return;
+  }
+  const cfgMes = configMesSelecionado();
+  let capReal = 0;
+  const pelaMeta = [];
+  pessoasMeta.forEach(nome=>{
+    const doPessoa = doTime.filter(l=>l.colaborador.toLowerCase()===nome.toLowerCase());
+    const dias = new Set(doPessoa.map(l=>l.data)).size;
+    if(dias > 0){ capReal += doPessoa.reduce((s,l)=>s+Number(l.qtd||0),0)/dias; return; }
+    pelaMeta.push(nome);
+    const md = cfgMes.metaDiariaPorPessoa[nome];
+    capReal += Number(md !== undefined ? md : state.metasProducao.baseUnidades) || 0;
+  });
+
+  const pecas = doTime.reduce((s,l)=>s+Number(l.qtd||0),0);
+  const minutos = doTime.reduce((s,l)=>s+minutosEstimadoLancamento(l),0);
+  let minPorPeca = (pecas > 0 && minutos > 0) ? minutos/pecas : 0;
+  if(!minPorPeca){
+    /* mês sem produção ainda: tempo padrão médio, pesado pela venda média */
+    const gs = state.grupos.filter(g=>g.tempoPadrao > 0 && g.vendasMedias > 0);
+    const v = gs.reduce((s,g)=>s+g.vendasMedias,0);
+    minPorPeca = v > 0 ? gs.reduce((s,g)=>s+g.tempoPadrao*g.vendasMedias,0)/v : 0;
+  }
+  const c = state.capacidade || {};
+  const nP = Number(c.numPessoas)||0, hD = Number(c.horasDia)||0, ef = Number(c.eficiencia)||0;
+  const capTeto = minPorPeca > 0 ? nP*hD*(ef/100)*60/minPorPeca : 0;
+
+  const falta = Math.max(0, meta - produzido);
+  const projecao = produzido + capReal*pr.restantes;
+  let veredito, cls, detalhe;
+  if(falta === 0){
+    veredito = "Meta batida"; cls = "good";
+    detalhe = `${fmt(produzido)} de ${fmt(meta)} peças`;
+  } else if(pr.restantes === 0){
+    veredito = "Mês encerrado abaixo da meta"; cls = "bad";
+    detalhe = `faltaram ${fmt(falta)} peças`;
+  } else {
+    const precisa = falta/pr.restantes;
+    const uso = capReal > 0 ? precisa/capReal*100 : Infinity;
+    if(uso <= 90){ veredito = "Capacidade suficiente"; cls = "good"; }
+    else if(uso <= 100){ veredito = "Perto do limite"; cls = "warn"; }
+    else { veredito = "Meta acima da capacidade"; cls = "bad"; }
+    detalhe = `precisa de ${fmt(precisa)} peças/dia, ${isFinite(uso) ? uso.toFixed(0) + "%" : "—"} da capacidade real`
+      + (capTeto > 0 ? ` (${(precisa/capTeto*100).toFixed(0)}% do teto configurado)` : "");
+  }
+  grid.innerHTML = `
+    <div class="kpi-card ${cls}"><div class="label">Capacidade x meta</div><div class="value" style="font-size:19px;line-height:1.25;">${veredito}</div><div class="sub">${detalhe}</div></div>
+    <div class="kpi-card"><div class="label">Capacidade real por dia</div><div class="value">${fmt(capReal)}</div><div class="sub">peças/dia útil, no ritmo deste mês de ${esc(pessoasMeta.join(", "))}${pelaMeta.length ? `. ${esc(pelaMeta.join(", "))} pela meta diária (sem produção no mês)` : ""}</div></div>
+    <div class="kpi-card"><div class="label">Teto pela configuração</div><div class="value">${capTeto > 0 ? fmt(capTeto) : "—"}</div><div class="sub">peças/dia: ${nP} pessoa(s) × ${hD}h × ${ef}%, a ${minPorPeca.toFixed(2)} min/peça (mistura de produtos do mês)</div></div>
+    <div class="kpi-card ${projecao >= meta ? "good" : "bad"}"><div class="label">Projeção de fechamento</div><div class="value">${fmt(projecao)}</div><div class="sub">${(projecao/meta*100).toFixed(0)}% da meta${pr.restantes > 0 ? `, se a capacidade real se mantiver nos ${pr.restantes} dia(s) úteis restantes` : ", mês encerrado"}</div></div>`;
+}
+
+/* Modelos diferentes = códigos de produto distintos (D3 Cod), não peças.
+   Só lançamento importado a partir de 20/10/2026 traz o código; o que
+   veio antes, ou foi digitado à mão, conta como "sem código" e a tela
+   avisa que a contagem está incompleta em vez de mostrar um número baixo. */
+function modelosDe(lancs){
+  const cods = new Set();
+  let pecas = 0, comCodigo = 0;
+  lancs.forEach(l=>{
+    const q = Number(l.qtd||0);
+    pecas += q;
+    if(l.produtos && typeof l.produtos === "object"){
+      Object.keys(l.produtos).forEach(c=>cods.add(c));
+      comCodigo += q;
+    }
+  });
+  return { modelos:cods.size, pecas, cobertura: pecas > 0 ? comCodigo/pecas : 0 };
+}
+function textoModelos(m){
+  if(m.cobertura <= 0) return { txt:"—", dica:"Os lançamentos deste mês ainda não têm o código do produto. Reimporte o arquivo do TOTVS (aba Lançamentos) para contar os modelos." };
+  if(m.cobertura < 0.999) return { txt:"≥ " + m.modelos.toLocaleString("pt-BR"), dica:`Só ${Math.round(m.cobertura*100)}% das peças do mês têm o código do produto. Reimporte o arquivo do TOTVS das datas que faltam para completar.` };
+  return { txt:m.modelos.toLocaleString("pt-BR"), dica:"" };
+}
+
+/* argumento de onclick: JSON dentro de atributo, não esc() sozinho — o
+   navegador desfaz o &#39; antes do JavaScript ler */
+function jsArg(v){ return esc(JSON.stringify(String(v))); }
+
+function textoDemandasDia(lista){
+  return lista.map(x=> esc(x.demanda) + " " + (x.minutos/60).toFixed(1) + "h"
+    + (x.status && x.status !== "Concluída" ? " (" + esc(String(x.status).toLowerCase()) + ")" : "")).join(" · ");
+}
+function celulaDemandasDia(dems, data){
+  const doDia = dems.filter(x=>x.data===data);
+  if(!doDia.length) return "—";
+  const lista = doDia.map(x=>({ demanda:x.demanda, minutos:minutosEntre(x.inicio,x.fim), status:x.status }));
+  const h = lista.reduce((s,x)=>s+x.minutos,0)/60;
+  return `${h.toFixed(1)}<div class="cel-sub">${textoDemandasDia(lista)}</div>`;
 }
 
 function corDoTema(varName){
@@ -2776,8 +3121,9 @@ function demandasDe(nomeColaborador){
 function fillColaboradorDemandaSelects(){
   const selColab = document.getElementById("dColaborador");
   const valorAtual = selColab.value;
-  selColab.innerHTML = state.equipe.map(p=>`<option value="${p.nome}">${p.nome}</option>`).join("");
-  if(valorAtual && state.equipe.some(p=>p.nome===valorAtual)) selColab.value = valorAtual;
+  const ativos = state.equipe.filter(pessoaAtiva);
+  selColab.innerHTML = ativos.map(p=>`<option value="${esc(p.nome)}">${esc(p.nome)}</option>`).join("");
+  if(valorAtual && ativos.some(p=>p.nome===valorAtual)) selColab.value = valorAtual;
   atualizarDemandasSelect();
 }
 
@@ -2844,25 +3190,36 @@ function renderDemandas(){
   fillColaboradorDemandaSelects();
   const entradas = demandasLogDoMes();
   renderEmAndamento(entradas);
+  renderTodasDemandas(entradas);
 
-  /* resumo por colaborador */
+  /* Resumo por colaborador: cada demanda conta para a pessoa do cadastro,
+     qualquer que seja o nome com que foi gravada ("Pedro Henrique" e
+     "Pedro Henrique Rodrigues da Silva" são uma linha só). Inativo só
+     aparece se tiver registro no mês; nome sem cadastro também aparece,
+     para nenhuma hora registrada sumir do resumo. */
   const tblResumo = document.getElementById("tblResumoDemandas");
-  tblResumo.innerHTML = state.equipe.map(p=>{
-    const dos = entradas.filter(d=>d.colaborador===p.nome);
+  const linhasResumo = state.equipe
+    .filter(p=> pessoaAtiva(p) || entradas.some(d=>pessoaDoNome(d.colaborador)===p))
+    .map(p=>({ nome:p.nome, pessoa:p, dos:entradas.filter(d=>pessoaDoNome(d.colaborador)===p) }));
+  Array.from(new Set(entradas.filter(d=>!pessoaDoNome(d.colaborador)).map(d=>d.colaborador))).forEach(n=>{
+    linhasResumo.push({ nome:n, pessoa:null, dos:entradas.filter(d=>d.colaborador===n) });
+  });
+  tblResumo.innerHTML = linhasResumo.map(({nome, pessoa, dos})=>{
     const horas = dos.reduce((s,d)=>s+minutosEntre(d.inicio,d.fim),0)/60;
     const concluidas = dos.filter(d=>d.status==="Concluída").length;
     const atrasadas = dos.filter(d=>d.status==="Atrasada").length;
     const andamento = dos.filter(d=>d.status==="Em andamento").length;
-    const demandasCadastradas = demandasDe(p.nome);
+    const demandasCadastradas = pessoa ? demandasDe(pessoa.nome) : [];
     const demandasFeitas = new Set(dos.map(d=>d.demanda));
     const semRegistro = demandasCadastradas.filter(d=>!demandasFeitas.has(d));
+    const selo = !pessoa ? ` <span class="badge warn">sem cadastro</span>` : (pessoaAtiva(pessoa) ? "" : ` <span class="badge neutro">inativo</span>`);
     return `<tr>
-      <td>${p.nome}</td>
+      <td>${esc(nome)}${selo}</td>
       <td class="num">${horas.toFixed(1)}</td>
       <td class="num">${concluidas}</td>
       <td class="num">${atrasadas}</td>
       <td class="num">${andamento}</td>
-      <td>${semRegistro.length ? `<span class="badge warn">${semRegistro.length} demanda(s): ${semRegistro.join("; ")}</span>` : `<span class="badge good">tudo registrado</span>`}</td>
+      <td>${!pessoa ? "—" : (semRegistro.length ? `<span class="badge warn">${semRegistro.length} demanda(s): ${esc(semRegistro.join("; "))}</span>` : `<span class="badge good">tudo registrado</span>`)}</td>
     </tr>`;
   }).join("");
 
@@ -2870,8 +3227,9 @@ function renderDemandas(){
   const tblTempo = document.getElementById("tblTempoDemanda");
   const chaves = {};
   entradas.forEach(d=>{
-    const k = d.colaborador+"|"+d.demanda;
-    if(!chaves[k]) chaves[k] = { colaborador:d.colaborador, demanda:d.demanda, minutos:0, registros:0 };
+    const nome = nomeCadastro(d.colaborador);
+    const k = nome+"|"+d.demanda;
+    if(!chaves[k]) chaves[k] = { colaborador:nome, demanda:d.demanda, minutos:0, registros:0 };
     chaves[k].minutos += minutosEntre(d.inicio,d.fim);
     chaves[k].registros += 1;
   });
@@ -2880,7 +3238,7 @@ function renderDemandas(){
     tblTempo.innerHTML = `<tr><td colspan="4"><div class="empty"><div class="display">Sem registros no mês</div>Use o formulário acima para começar.</div></td></tr>`;
   } else {
     tblTempo.innerHTML = linhasTempo.map(l=>`
-      <tr><td>${l.colaborador}</td><td>${l.demanda}</td><td class="num">${(l.minutos/60).toFixed(1)}</td><td class="num">${l.registros}</td></tr>
+      <tr><td>${esc(l.colaborador)}</td><td>${esc(l.demanda)}</td><td class="num">${(l.minutos/60).toFixed(1)}</td><td class="num">${l.registros}</td></tr>
     `).join("");
   }
 
@@ -2893,10 +3251,10 @@ function renderDemandas(){
     tblAtrasos.innerHTML = atrasos.map(d=>{
       return `<tr>
         <td>${formatarDataBr(d.data)}</td>
-        <td>${d.colaborador}</td>
-        <td>${d.demanda}</td>
-        <td>${d.motivo||"—"}</td>
-        <td><button class="del-btn" onclick="removerDemanda('${d.id}')">Excluir</button></td>
+        <td>${esc(nomeCadastro(d.colaborador))}</td>
+        <td>${esc(d.demanda)}</td>
+        <td>${esc(d.motivo||"—")}</td>
+        <td><button class="del-btn" onclick="removerDemanda(${jsArg(d.id)})">Excluir</button></td>
       </tr>`;
     }).join("");
   }
@@ -2908,40 +3266,56 @@ function primeiroNome(nome){
   return (nome||"").trim().split(" ")[0];
 }
 
+/* Duas horas diferentes, que o painel soma mas não confunde:
+   - produção: horas EQUIVALENTES, uma estimativa (peças × tempo padrão);
+   - demandas: horas REGISTRADAS, o início e o fim que alguém anotou.
+   Cada linha guarda as duas e a lista de demandas do dia, para quem lê
+   entender por que um dia rendeu menos peças. */
 function calcularHorasPorDiaPessoa(entradasDemandas, nomes){
   const porDiaPessoa = {};
-  function acumular(data, nome, minutos){
+  function linha(data, nome){
     const chave = data+"|"+nome;
-    porDiaPessoa[chave] = (porDiaPessoa[chave]||0) + minutos;
+    if(!porDiaPessoa[chave]) porDiaPessoa[chave] = { data, nome, minProducao:0, minDemandas:0, demandas:[] };
+    return porDiaPessoa[chave];
   }
 
-  lancamentosDoMes()
-    .filter(l=> nomes.some(n=>n.toLowerCase()===l.colaborador.toLowerCase()))
-    .forEach(l=> acumular(l.data, l.colaborador, minutosEstimadoLancamento(l)));
-
-  entradasDemandas.forEach(d=>{
-    const nome = primeiroNome(d.colaborador);
-    if(nomes.some(n=>n.toLowerCase()===nome.toLowerCase())) acumular(d.data, nome, minutosEntre(d.inicio,d.fim));
+  lancamentosDoMes().forEach(l=>{
+    const nome = nomes.find(n=>n.toLowerCase()===String(l.colaborador||"").toLowerCase());
+    if(nome) linha(l.data, nome).minProducao += minutosEstimadoLancamento(l);
   });
 
-  return Object.entries(porDiaPessoa).map(([chave,minutos])=>{
-    const [data,nome] = chave.split("|");
-    return { data, nome, horas: minutos/60 };
-  }).sort((a,b)=> b.data.localeCompare(a.data) || a.nome.localeCompare(b.nome));
+  entradasDemandas.forEach(d=>{
+    const nome = nomes.find(n=>mesmaPessoa(n, d.colaborador));
+    if(!nome) return;
+    const minutos = minutosEntre(d.inicio,d.fim);
+    const ln = linha(d.data, nome);
+    ln.minDemandas += minutos;
+    ln.demandas.push({ demanda:d.demanda, minutos, status:d.status });
+  });
+
+  return Object.values(porDiaPessoa).map(x=>({
+    data:x.data, nome:x.nome,
+    horas:(x.minProducao + x.minDemandas)/60,
+    horasProducao:x.minProducao/60,
+    horasDemandas:x.minDemandas/60,
+    demandas:x.demandas
+  })).sort((a,b)=> b.data.localeCompare(a.data) || a.nome.localeCompare(b.nome));
 }
 
 function renderTabelaHorasDia(idTabela, linhas, meta){
   const tbl = document.getElementById(idTabela);
   if(linhas.length===0){
-    tbl.innerHTML = `<tr><td colspan="4"><div class="empty"><div class="display">Sem dados no período</div>Registre lançamentos com horário ou demandas para ver essa tabela.</div></td></tr>`;
+    tbl.innerHTML = `<tr><td colspan="6"><div class="empty"><div class="display">Sem dados no período</div>Registre lançamentos com horário ou demandas para ver essa tabela.</div></td></tr>`;
     return;
   }
   tbl.innerHTML = linhas.map(l=>{
     const dentro = meta>0 ? l.horas >= meta : null;
     return `<tr>
       <td>${formatarDataBr(l.data)}</td>
-      <td>${l.nome}</td>
-      <td class="num">${l.horas.toFixed(1)}</td>
+      <td>${esc(l.nome)}</td>
+      <td class="num">${l.horasProducao.toFixed(1)}</td>
+      <td class="num">${l.horasDemandas.toFixed(1)}${l.demandas.length ? `<div class="cel-sub">${textoDemandasDia(l.demandas)}</div>` : ""}</td>
+      <td class="num" style="font-weight:700;">${l.horas.toFixed(1)}</td>
       <td>${dentro===null ? "—" : (dentro ? `<span class="badge good">Ok</span>` : `<span class="badge bad">Abaixo de ${meta}h</span>`)}</td>
     </tr>`;
   }).join("");
@@ -3002,10 +3376,12 @@ function renderComparativoHoras(){
   const linhas = calcularHorasPorDiaPessoa(demandasLogDoMes(), state.horasProducaoNomes);
 
   const porPessoa = {};
-  state.horasProducaoNomes.forEach(nome=>{ porPessoa[nome] = { totalHoras:0, dias:0, diasNaMeta:0 }; });
+  state.horasProducaoNomes.forEach(nome=>{ porPessoa[nome] = { totalHoras:0, horasProducao:0, horasDemandas:0, dias:0, diasNaMeta:0 }; });
   linhas.forEach(l=>{
-    if(!porPessoa[l.nome]) porPessoa[l.nome] = { totalHoras:0, dias:0, diasNaMeta:0 };
+    if(!porPessoa[l.nome]) porPessoa[l.nome] = { totalHoras:0, horasProducao:0, horasDemandas:0, dias:0, diasNaMeta:0 };
     porPessoa[l.nome].totalHoras += l.horas;
+    porPessoa[l.nome].horasProducao += l.horasProducao;
+    porPessoa[l.nome].horasDemandas += l.horasDemandas;
     porPessoa[l.nome].dias += 1;
     if(meta>0 && l.horas>=meta) porPessoa[l.nome].diasNaMeta += 1;
   });
@@ -3017,7 +3393,7 @@ function renderComparativoHoras(){
     const media = d.dias>0 ? d.totalHoras/d.dias : 0;
     return `<tr>
       <td>${nome}</td>
-      <td class="num">${d.totalHoras.toFixed(1)}</td>
+      <td class="num">${d.totalHoras.toFixed(1)}<div class="cel-sub">${d.horasProducao.toFixed(1)} produção (equiv.) · ${d.horasDemandas.toFixed(1)} demandas (registradas)</div></td>
       <td class="num">${d.dias}</td>
       <td class="num">${media.toFixed(1)}</td>
       <td class="num">${d.diasNaMeta} / ${d.dias}</td>
@@ -3069,10 +3445,110 @@ function renderComparativoHoras(){
 }
 
 function removerDemanda(id){
+  const alvo = state.demandasLog.find(d=>d.id===id);
+  if(!alvo) return;
+  if(!confirm(`Excluir a demanda "${alvo.demanda}" de ${nomeCadastro(alvo.colaborador)} em ${formatarDataBr(alvo.data)}?`)) return;
   state.demandasLog = state.demandasLog.filter(d=>d.id!==id);
+  if(demandaEditando === id) demandaEditando = null;
   saveState();
+  logRegistrar("exclusao",
+    "Apagou a demanda " + alvo.demanda + " · " + nomeCadastro(alvo.colaborador) + " · "
+      + formatarDataBr(alvo.data) + " (" + (alvo.inicio||"") + "–" + (alvo.fim||"") + ", " + alvo.status + ")",
+    alvo);
   renderAll();
 }
+
+/* Tabela com todas as demandas do mês, para corrigir e apagar. Editar não
+   troca o id: a fusão com a nuvem vê o mesmo registro alterado, não um
+   registro novo. */
+let demandaEditando = null;
+const STATUS_DEMANDA = ["Concluída","Em andamento","Atrasada"];
+function badgeStatusDemanda(s){
+  const cls = s==="Concluída" ? "good" : (s==="Em andamento" ? "warn" : "bad");
+  return `<span class="badge ${cls}">${esc(s||"—")}</span>`;
+}
+
+function renderTodasDemandas(entradas){
+  const sel = document.getElementById("filtroColabDemandas");
+  const anterior = sel.value;
+  const nomes = Array.from(new Set(entradas.map(d=>nomeCadastro(d.colaborador)))).sort((a,b)=>a.localeCompare(b));
+  sel.innerHTML = `<option value="">Todos</option>` + nomes.map(n=>`<option value="${esc(n)}">${esc(n)}</option>`).join("");
+  if(anterior && nomes.includes(anterior)) sel.value = anterior;
+  const filtro = sel.value;
+  const lista = entradas.filter(d=> !filtro || nomeCadastro(d.colaborador)===filtro).slice()
+    .sort((a,b)=> b.data.localeCompare(a.data) || String(b.inicio||"").localeCompare(String(a.inicio||"")));
+  const tbl = document.getElementById("tblTodasDemandas");
+  if(lista.length===0){
+    tbl.innerHTML = `<tr><td colspan="7"><div class="empty"><div class="display">Nenhuma demanda registrada no mês</div>Use o formulário acima para registrar.</div></td></tr>`;
+    return;
+  }
+  const totalMin = lista.reduce((s,d)=>s+minutosEntre(d.inicio,d.fim),0);
+  tbl.innerHTML = lista.map(d=>{
+    if(d.id === demandaEditando) return linhaEdicaoDemanda(d);
+    return `<tr>
+      <td>${formatarDataBr(d.data)}</td>
+      <td>${esc(nomeCadastro(d.colaborador))}</td>
+      <td>${esc(d.demanda)}${d.motivo ? `<div class="cel-sub">${esc(d.motivo)}</div>` : ""}</td>
+      <td class="num">${esc(d.inicio||"—")} – ${esc(d.fim||"…")}</td>
+      <td class="num">${(minutosEntre(d.inicio,d.fim)/60).toFixed(1)}</td>
+      <td>${badgeStatusDemanda(d.status)}</td>
+      <td><div class="acoes"><button class="del-btn" onclick="editarDemanda(${jsArg(d.id)})">Editar</button><button class="del-btn" onclick="removerDemanda(${jsArg(d.id)})">Excluir</button></div></td>
+    </tr>`;
+  }).join("") + `<tr><td colspan="4" style="color:var(--text-muted);">${lista.length} registro(s)</td><td class="num" style="font-weight:700;">${(totalMin/60).toFixed(1)}</td><td colspan="2"></td></tr>`;
+}
+
+function linhaEdicaoDemanda(d){
+  const atual = nomeCadastro(d.colaborador);
+  const opcoes = state.equipe.filter(p=> pessoaAtiva(p) || p.nome===atual).map(p=>p.nome);
+  if(!opcoes.includes(atual)) opcoes.unshift(atual);
+  const status = STATUS_DEMANDA.includes(d.status) ? STATUS_DEMANDA : [d.status].concat(STATUS_DEMANDA);
+  return `<tr style="background:var(--accent-light);">
+    <td><input type="date" class="inp-tbl" id="edData" value="${esc(d.data)}"></td>
+    <td><select class="inp-tbl" id="edColab">${opcoes.map(n=>`<option value="${esc(n)}" ${n===atual?"selected":""}>${esc(n)}</option>`).join("")}</select></td>
+    <td><input type="text" class="inp-tbl" id="edDemanda" value="${esc(d.demanda)}"><input type="text" class="inp-tbl" id="edMotivo" value="${esc(d.motivo||"")}" placeholder="Motivo (se atrasada ou em andamento)" style="margin-top:4px;"></td>
+    <td><input type="time" class="inp-tbl" id="edInicio" value="${esc(d.inicio||"")}"><input type="time" class="inp-tbl" id="edFim" value="${esc(d.fim||"")}" style="margin-top:4px;"></td>
+    <td></td>
+    <td><select class="inp-tbl" id="edStatus">${status.map(s=>`<option value="${esc(s)}" ${s===d.status?"selected":""}>${esc(s)}</option>`).join("")}</select></td>
+    <td><div class="acoes"><button class="btn btn-sm" onclick="salvarDemanda(${jsArg(d.id)})">Salvar</button><button class="del-btn" onclick="cancelarEdicaoDemanda()">Cancelar</button></div></td>
+  </tr>`;
+}
+
+function editarDemanda(id){
+  demandaEditando = id;
+  renderDemandas();
+  const el = document.getElementById("edDemanda");
+  if(el) el.focus();
+}
+function cancelarEdicaoDemanda(){
+  demandaEditando = null;
+  renderDemandas();
+}
+
+function salvarDemanda(id){
+  const d = state.demandasLog.find(x=>x.id===id);
+  if(!d){ demandaEditando = null; renderDemandas(); return; }
+  const v = k => document.getElementById(k).value;
+  const novo = { data:v("edData"), demanda:v("edDemanda").trim(), inicio:v("edInicio"), fim:v("edFim"),
+                 status:v("edStatus"), motivo:v("edMotivo").trim() };
+  const colab = v("edColab");
+  if(!novo.data || !novo.demanda || !novo.inicio){ alert("Preencha data, demanda e hora de início."); return; }
+  if(novo.status !== "Em andamento" && !novo.fim){ alert("Preencha a hora fim, ou deixe o status como \u201cEm andamento\u201d."); return; }
+  const antes = { colaborador:d.colaborador, data:d.data, demanda:d.demanda, inicio:d.inicio, fim:d.fim, status:d.status, motivo:d.motivo||"" };
+  /* pessoa trocada de verdade grava o nome novo; a mesma pessoa mantém o
+     nome com que o registro foi feito */
+  const colaborador = colab === nomeCadastro(d.colaborador) ? d.colaborador : colab;
+  const depois = Object.assign({ colaborador }, novo);
+  demandaEditando = null;
+  if(JSON.stringify(antes) === JSON.stringify(depois)){ renderDemandas(); return; }
+  Object.assign(d, depois);
+  saveState();
+  logRegistrar("demanda",
+    "Editou " + d.demanda + " · " + nomeCadastro(d.colaborador) + " · " + formatarDataBr(d.data)
+      + " (" + (d.inicio||"") + "–" + (d.fim||"") + ", " + d.status + ")",
+    { id:id, antes:antes, depois:depois });
+  renderAll();
+}
+document.getElementById("filtroColabDemandas").addEventListener("change", renderDemandas);
 
 function renderEmAndamento(entradas){
   const tbl = document.getElementById("tblEmAndamento");
@@ -3084,7 +3560,7 @@ function renderEmAndamento(entradas){
   tbl.innerHTML = emAndamento.map(d=>{
     return `<tr>
       <td>${formatarDataBr(d.data)}</td>
-      <td>${d.colaborador}</td>
+      <td>${esc(nomeCadastro(d.colaborador))}</td>
       <td>${d.demanda}</td>
       <td class="num">${d.inicio||"—"}</td>
       <td><input type="time" id="horaFim_${d.id}" value="${d.fim||""}" style="background:var(--surface);border:1px solid var(--border);color:var(--text);padding:6px 8px;border-radius:6px;"></td>
@@ -3108,34 +3584,264 @@ function concluirDemanda(id){
   renderAll();
 }
 
+/* o que liga uma pessoa ao histórico — e impede apagar o cadastro dela */
+function historicoDaPessoa(p){
+  const lanc = state.lancamentos.filter(l=>pessoaDoNome(l.colaborador)===p);
+  const demandas = state.demandasLog.filter(d=>pessoaDoNome(d.colaborador)===p).length;
+  const observacoes = state.observacoesEquipe.filter(o=>pessoaDoNome(o.sobre)===p).length;
+  const meses = Object.values(state.metasPorMes||{}).filter(c=>(c.pessoasComMeta||[]).some(n=>pessoaDoNome(n)===p)).length;
+  const pecas = lanc.reduce((s,l)=>s+Number(l.qtd||0),0);
+  return { lancamentos:lanc.length, pecas, demandas, observacoes, meses,
+           total: lanc.length + demandas + observacoes + meses };
+}
+function textoHistorico(h){
+  const partes = [];
+  if(h.lancamentos) partes.push(h.pecas.toLocaleString("pt-BR") + " peças");
+  if(h.demandas) partes.push(h.demandas + " demanda(s)");
+  if(h.observacoes) partes.push(h.observacoes + " observação(ões)");
+  if(h.meses) partes.push("meta em " + h.meses + " mês(es)");
+  return partes.join(" · ");
+}
+/* nomes usados no painel que hoje apontam para a pessoa p */
+function nomesLigadosA(p){
+  const vistos = new Map();
+  const anota = n => { const k = normNome(n); if(k && !vistos.has(k) && pessoaDoNome(n) === p) vistos.set(k, String(n).trim()); };
+  state.demandasLog.forEach(d=>anota(d.colaborador));
+  state.observacoesEquipe.forEach(o=>anota(o.sobre));
+  state.lancamentos.forEach(l=>anota(l.colaborador));
+  state.equipeProducao.concat(state.horasProducaoNomes, state.horasGestaoNomes).forEach(anota);
+  Object.values(state.metasPorMes||{}).forEach(c=>(c.pessoasComMeta||[]).forEach(anota));
+  return Array.from(vistos.values());
+}
+function nomeJaUsado(nome, exceto){
+  const n = normNome(nome);
+  return state.equipe.find(x=>x!==exceto && (normNome(x.nome)===n || apelidosDe(x).some(a=>normNome(a)===n))) || null;
+}
+
 function renderEquipeConfig(){
   const tbl = document.getElementById("tblEquipe");
-  tbl.innerHTML = state.equipe.map((p,i)=>`
-    <tr>
-      <td><input type="text" value="${p.nome}" data-idx="${i}" data-field="nome" class="cfg-input-equipe"></td>
-      <td><input type="text" value="${p.setor}" data-idx="${i}" data-field="setor" class="cfg-input-equipe"></td>
-      <td><input type="text" value="${p.nivel}" data-idx="${i}" data-field="nivel" class="cfg-input-equipe"></td>
-      <td><input type="text" value="${p.demandas}" data-idx="${i}" data-field="demandas" class="cfg-input-equipe" style="width:100%;"></td>
-      <td><button class="del-btn" onclick="removerEquipe(${i})">Excluir</button></td>
-    </tr>
-  `).join("");
+  /* ativos primeiro; data-idx continua apontando para a posição real */
+  const ordem = state.equipe.map((p,i)=>({p,i})).sort((a,b)=> Number(pessoaAtiva(b.p)) - Number(pessoaAtiva(a.p)));
+  tbl.innerHTML = ordem.map(({p,i})=>{
+    const ativo = pessoaAtiva(p);
+    const hist = textoHistorico(historicoDaPessoa(p)) || "sem histórico";
+    return `<tr style="${ativo ? "" : "opacity:.65;"}">
+      <td><input type="text" value="${esc(p.nome)}" data-idx="${i}" data-field="nome" class="cfg-input-equipe"></td>
+      <td><input type="text" value="${esc(apelidosDe(p).join(", "))}" data-idx="${i}" data-field="apelidos" class="cfg-input-equipe" placeholder="login do TOTVS, nome antigo..."></td>
+      <td><input type="text" value="${esc(p.setor||"")}" data-idx="${i}" data-field="setor" class="cfg-input-equipe"></td>
+      <td><input type="text" value="${esc(p.nivel||"")}" data-idx="${i}" data-field="nivel" class="cfg-input-equipe"></td>
+      <td><input type="text" value="${esc(p.demandas||"")}" data-idx="${i}" data-field="demandas" class="cfg-input-equipe" style="width:100%;"></td>
+      <td>${ativo ? `<span class="badge good">Ativo</span>` : `<span class="badge neutro">Inativo</span>`}<div class="cel-sub">${esc(hist)}</div></td>
+      <td><div class="acoes">${ativo ? `<button class="del-btn" onclick="desativarPessoa(${i})">Desativar</button>` : `<button class="del-btn" onclick="reativarPessoa(${i})">Reativar</button>`}<button class="del-btn" onclick="removerEquipe(${i})">Excluir</button></div></td>
+    </tr>`;
+  }).join("");
 
   tbl.querySelectorAll(".cfg-input-equipe").forEach(inp=>{
-    inp.style.cssText += "background:transparent;border:1px solid transparent;color:inherit;font-family:inherit;font-size:inherit;padding:4px 6px;border-radius:4px;width:100%;";
+    const minLarg = { nome:230, apelidos:170, setor:100, nivel:140, demandas:220 }[inp.dataset.field] || 110;
+    inp.style.cssText += "background:transparent;border:1px solid transparent;color:inherit;font-family:inherit;font-size:inherit;padding:4px 6px;border-radius:4px;width:100%;min-width:" + minLarg + "px;";
     inp.addEventListener("focus",()=> inp.style.borderColor = "var(--navy)");
     inp.addEventListener("blur",()=>{
       inp.style.borderColor = "transparent";
       const idx = Number(inp.dataset.idx), field = inp.dataset.field;
-      state.equipe[idx][field] = inp.value;
+      const p = state.equipe[idx];
+      if(!p) return;
+      if(field === "nome"){ renomearPessoa(idx, inp.value); return; }
+      if(field === "apelidos"){ salvarApelidos(idx, inp.value); return; }
+      if((p[field]||"") === inp.value) return;    // nada mudou: não regrava nem manda à nuvem
+      p[field] = inp.value;
       saveState();
       renderAll();
     });
   });
+  renderNomesSoltos();
 }
 
-function removerEquipe(idx){
-  state.equipe.splice(idx,1);
+/* Renomear não reescreve registro nenhum: o nome antigo vira "outro nome"
+   e o que foi gravado com ele continua desta pessoa. Nome de rascunho
+   ("Novo colaborador") ou sem registro nenhum não precisa ser guardado. */
+function renomearPessoa(idx, valor){
+  const p = state.equipe[idx];
+  const novo = String(valor||"").trim().replace(/\s+/g, " ");
+  const antigo = p.nome;
+  if(novo === antigo) return;
+  if(!novo){ renderEquipeConfig(); return; }
+  const outro = nomeJaUsado(novo, p);
+  if(outro){
+    alert(`"${novo}" já é o nome (ou um dos outros nomes) de ${outro.nome}.\n\nSe for a mesma pessoa, use "Juntar" em "Nomes repetidos ou sem cadastro".`);
+    renderEquipeConfig();
+    return;
+  }
+  const ap = apelidosDe(p).filter(a=>normNome(a)!==normNome(novo));
+  const temAp = a => ap.some(x=>normNome(x)===normNome(a));
+  /* Todo nome que hoje leva a esta pessoa — o antigo, o "Pedro" do TOTVS,
+     o "Pedro Henrique" de uma demanda velha — vira outro nome explícito.
+     Assim o vínculo não depende mais do primeiro nome, que pode mudar. */
+  const ligados = nomesLigadosA(p);
+  if(localStorage.getItem(IDENTIDADE_KEY) === antigo && !ligados.includes(antigo)) ligados.push(antigo);
+  ligados.forEach(n=>{ if(normNome(n)!==normNome(novo) && !temAp(n)) ap.push(n); });
+  p.nome = novo;
+  p.apelidos = ap;
+  if(localStorage.getItem(IDENTIDADE_KEY) === antigo) localStorage.setItem(IDENTIDADE_KEY, novo);
   saveState();
+  logRegistrar("pessoa", "Renomeou " + antigo + " para " + novo, { antes:antigo, depois:novo, apelidos:ap });
+  renderAll();
+}
+
+function salvarApelidos(idx, valor){
+  const p = state.equipe[idx];
+  const lista = [];
+  String(valor||"").split(",").map(s=>s.trim().replace(/\s+/g, " ")).filter(Boolean).forEach(a=>{
+    if(normNome(a)===normNome(p.nome) || lista.some(x=>normNome(x)===normNome(a))) return;
+    lista.push(a);
+  });
+  if(JSON.stringify(lista) === JSON.stringify(apelidosDe(p))){ renderEquipeConfig(); return; }
+  const conflito = lista.map(a=>({ a, outro:nomeJaUsado(a, p) })).find(c=>c.outro);
+  if(conflito){
+    alert(`"${conflito.a}" já pertence a ${conflito.outro.nome}.`);
+    renderEquipeConfig();
+    return;
+  }
+  const antes = apelidosDe(p).slice();
+  p.apelidos = lista;
+  saveState();
+  logRegistrar("pessoa", "Outros nomes de " + p.nome + ": " + (lista.join(", ") || "nenhum"), { pessoa:p.nome, antes:antes, depois:lista });
+  renderAll();
+}
+
+function desativarPessoa(idx){
+  const p = state.equipe[idx];
+  if(!p) return;
+  if(!confirm(`Desativar ${p.nome}?\n\nA pessoa sai das listas de escolha ("Você é", Demandas, Observações). Todo o histórico continua no painel e dá para reativar depois.`)) return;
+  p.ativo = false;
+  saveState();
+  logRegistrar("pessoa", "Desativou " + p.nome, { pessoa:p.nome });
+  renderAll();
+}
+
+function reativarPessoa(idx){
+  const p = state.equipe[idx];
+  if(!p) return;
+  p.ativo = true;
+  saveState();
+  logRegistrar("pessoa", "Reativou " + p.nome, { pessoa:p.nome });
+  renderAll();
+}
+
+/* Com histórico, o cadastro não sai: é ele que liga demandas, observações
+   e lançamentos à pessoa. O painel oferece desativar no lugar. */
+function removerEquipe(idx){
+  const p = state.equipe[idx];
+  if(!p) return;
+  const h = historicoDaPessoa(p);
+  if(h.total > 0){
+    if(!pessoaAtiva(p)){
+      alert(`${p.nome} tem histórico no painel (${textoHistorico(h)}) e por isso continua no cadastro, inativa. É o cadastro que mantém esse histórico ligado a ela.`);
+      return;
+    }
+    if(confirm(`${p.nome} tem histórico no painel (${textoHistorico(h)}). Excluir o cadastro deixaria esse histórico sem dono, então o painel não exclui.\n\nDesativar no lugar? A pessoa sai das listas de escolha e o histórico fica intacto.`)){
+      p.ativo = false;
+      saveState();
+      logRegistrar("pessoa", "Desativou " + p.nome + " (pediu exclusão, tinha histórico)", { pessoa:p.nome, historico:h });
+      renderAll();
+    }
+    return;
+  }
+  if(!confirm(`Excluir ${p.nome} do cadastro?\n\nNão há nenhum registro com esse nome.`)) return;
+  state.equipe.splice(idx,1);
+  if(localStorage.getItem(IDENTIDADE_KEY) === p.nome) localStorage.removeItem(IDENTIDADE_KEY);
+  saveState();
+  logRegistrar("pessoa", "Excluiu " + p.nome + " do cadastro (sem histórico)", p);
+  renderAll();
+}
+
+/* Nomes que o painel usa e o cadastro não reconhece, e cadastros com o
+   mesmo primeiro nome (o "Pedro" do TOTVS não sabe de qual dos dois é). */
+function renderNomesSoltos(){
+  const box = document.getElementById("blocoNomesSoltos");
+  const usos = new Map();
+  function anota(nome, onde){
+    const k = normNome(nome);
+    if(!k || k === "equipe geral" || pessoaDoNome(nome)) return;
+    if(!usos.has(k)) usos.set(k, { nome:String(nome).trim().replace(/\s+/g, " "), onde:new Map() });
+    const u = usos.get(k);
+    u.onde.set(onde, (u.onde.get(onde)||0) + 1);
+  }
+  state.demandasLog.forEach(d=>anota(d.colaborador, "demandas"));
+  state.observacoesEquipe.forEach(o=>anota(o.sobre, "observações"));
+  state.equipeProducao.forEach(n=>anota(n, "equipe dos painéis"));
+  state.horasProducaoNomes.forEach(n=>anota(n, "horas: produção"));
+  state.horasGestaoNomes.forEach(n=>anota(n, "horas: gestão"));
+  Object.values(state.metasPorMes||{}).forEach(c=>(c.pessoasComMeta||[]).forEach(n=>anota(n, "meta (meses)")));
+
+  const pares = [];
+  state.equipe.forEach((a,i)=> state.equipe.forEach((b,j)=>{
+    if(j <= i) return;
+    if(normNome(primeiroNome(a.nome)) !== normNome(primeiroNome(b.nome))) return;
+    if(apelidosDe(a).length && apelidosDe(b).length) return;   // já disseram quem é quem
+    pares.push([i,j]);
+  }));
+
+  const opcoes = `<option value="">Escolha a pessoa...</option>` + state.equipe.map((p,i)=>`<option value="${i}">${esc(p.nome)}${pessoaAtiva(p) ? "" : " (inativo)"}</option>`).join("");
+  let html = "";
+  if(pares.length){
+    html += `<p class="note" style="margin:0 0 10px;"><strong>Mesmo primeiro nome no cadastro.</strong> Se for a mesma pessoa, junte os dois cadastros. Se forem pessoas diferentes, preencha "Outros nomes" de cada uma com o login do TOTVS (ex.: "Pedro" para pedro.silva). Sem isso o painel não sabe de quem são os lançamentos.</p>
+      <div class="table-wrap rolavel" style="margin-bottom:16px;"><table class="tbl-compacta"><tbody>` +
+      pares.map(([i,j])=>`<tr><td>${esc(state.equipe[i].nome)} <span style="color:var(--text-muted);">e</span> ${esc(state.equipe[j].nome)}</td>
+        <td><div class="acoes"><button class="del-btn" onclick="juntarPessoas(${i},${j})">Juntar em ${esc(state.equipe[i].nome)}</button><button class="del-btn" onclick="juntarPessoas(${j},${i})">Juntar em ${esc(state.equipe[j].nome)}</button></div></td></tr>`).join("") +
+      `</tbody></table></div>`;
+  }
+  if(usos.size){
+    let k = 0;
+    html += `<p class="note" style="margin:0 0 10px;"><strong>Nomes sem cadastro.</strong> Aparecem nos registros ou nas listas de Configurações e não batem com ninguém do cadastro. "Juntar" guarda o nome como outro nome da pessoa escolhida. "Cadastrar" cria a pessoa. Nenhum registro é alterado.</p>
+      <div class="table-wrap rolavel" style="margin-bottom:0;"><table class="tbl-compacta"><thead><tr><th>Nome</th><th>Onde aparece</th><th>É a mesma pessoa que...</th><th></th></tr></thead><tbody>` +
+      Array.from(usos.values()).sort((a,b)=>a.nome.localeCompare(b.nome)).map(u=>{
+        const id = "selJuntar" + (k++);
+        const onde = Array.from(u.onde.entries()).map(([o,n])=> n > 1 ? `${o} (${n})` : o).join(", ");
+        return `<tr><td><strong>${esc(u.nome)}</strong></td><td>${esc(onde)}</td>
+          <td>${state.equipe.length ? `<select class="inp-tbl" id="${id}">${opcoes}</select>` : "—"}</td>
+          <td><div class="acoes">${state.equipe.length ? `<button class="del-btn" onclick="juntarNomeSolto(${jsArg(u.nome)}, '${id}')">Juntar</button>` : ""}<button class="del-btn" onclick="cadastrarNomeSolto(${jsArg(u.nome)})">Cadastrar</button></div></td></tr>`;
+      }).join("") + `</tbody></table></div>`;
+  }
+  box.innerHTML = html || `<div class="note" style="margin:0;">Nenhum nome repetido ou sem cadastro.</div>`;
+}
+
+function juntarNomeSolto(nome, idSelect){
+  const sel = document.getElementById(idSelect);
+  const p = (sel && sel.value !== "") ? state.equipe[Number(sel.value)] : null;
+  if(!p){ alert(`Escolha na lista quem é "${nome}" antes de juntar.`); return; }
+  if(!confirm(`"${nome}" é ${p.nome}?\n\n"${nome}" passa a ser um dos outros nomes de ${p.nome}, e o que foi registrado com ele conta para essa pessoa.`)) return;
+  p.apelidos = apelidosDe(p).concat([nome]);
+  saveState();
+  logRegistrar("pessoa", "Juntou \u201c" + nome + "\u201d a " + p.nome, { nome:nome, pessoa:p.nome });
+  renderAll();
+}
+
+function cadastrarNomeSolto(nome){
+  state.equipe.push({ nome, setor:"Produção", nivel:"", demandas:"" });
+  saveState();
+  logRegistrar("pessoa", "Cadastrou " + nome, { nome:nome });
+  renderAll();
+}
+
+function juntarPessoas(destIdx, origIdx){
+  const dest = state.equipe[destIdx], orig = state.equipe[origIdx];
+  if(!dest || !orig || dest === orig) return;
+  if(!confirm(`Juntar "${orig.nome}" em "${dest.nome}"?\n\n"${orig.nome}" vira um dos outros nomes de ${dest.nome}, as demandas cadastradas se somam e o cadastro repetido sai. Nenhum lançamento, demanda ou observação é alterado.`)) return;
+  const ap = apelidosDe(dest).slice();
+  [orig.nome].concat(apelidosDe(orig)).forEach(a=>{
+    if(normNome(a)!==normNome(dest.nome) && !ap.some(x=>normNome(x)===normNome(a))) ap.push(a);
+  });
+  dest.apelidos = ap;
+  const dem = String(dest.demandas||"").split(",").map(s=>s.trim()).filter(Boolean);
+  String(orig.demandas||"").split(",").map(s=>s.trim()).filter(Boolean).forEach(d=>{ if(!dem.includes(d)) dem.push(d); });
+  dest.demandas = dem.join(", ");
+  if(!dest.setor && orig.setor) dest.setor = orig.setor;
+  if(!dest.nivel && orig.nivel) dest.nivel = orig.nivel;
+  if(!pessoaAtiva(dest) && pessoaAtiva(orig)) dest.ativo = true;
+  state.equipe.splice(origIdx, 1);
+  if(localStorage.getItem(IDENTIDADE_KEY) === orig.nome) localStorage.setItem(IDENTIDADE_KEY, dest.nome);
+  saveState();
+  logRegistrar("pessoa", "Juntou o cadastro " + orig.nome + " em " + dest.nome, { origem:orig, destino:dest.nome });
   renderAll();
 }
 
@@ -3361,6 +4067,9 @@ function parseArquivoTotvs(texto){
   const idxUsuario = header.findIndex(c=>c.includes("USUARIO"));
   const idxGrupo = header.findIndex(c=>c.includes("GRUPO"));
   const idxData = header.findIndex(c=>c.includes("EMISSAO"));
+  /* código do produto (D3 Cod): é o que conta MODELOS diferentes, não só
+     peças. Export sem a coluna continua sendo aceito, só não conta modelos. */
+  const idxProduto = header.findIndex(c=> /(^|[\s_])COD(IGO)?$/.test(c));
 
   const registros = [];
   const gruposNovos = new Set();
@@ -3383,21 +4092,27 @@ function parseArquivoTotvs(texto){
       gruposNovos.add(grupoCod);
     }
 
-    registros.push({ usuario: nomeAmigavel(usuario), grupoFino: grupoCod, grupo: grupoFino.macroGrupo, data: dataISO });
+    const produto = idxProduto >= 0 ? (campos[idxProduto]||"").trim() : "";
+    registros.push({ usuario: nomeAmigavel(usuario), grupoFino: grupoCod, grupo: grupoFino.macroGrupo, data: dataISO, produto });
   }
 
-  return { registros, gruposNovos: Array.from(gruposNovos) };
+  return { registros, gruposNovos: Array.from(gruposNovos), temProduto: idxProduto >= 0 };
 }
 
+/* A chave da agregação continua a mesma (data|grupo|grupoFino|usuário) —
+   é dela que sai o id do lançamento. Os códigos de produto vão dentro do
+   lançamento, com a quantidade de cada um. */
 function agregarRegistros(registros){
   const mapa = {};
   registros.forEach(r=>{
     const chave = `${r.data}|${r.grupo}|${r.grupoFino}|${r.usuario}`;
-    mapa[chave] = (mapa[chave]||0) + 1;
+    if(!mapa[chave]) mapa[chave] = { qtd:0, produtos:Object.create(null) };
+    mapa[chave].qtd += 1;
+    if(r.produto) mapa[chave].produtos[r.produto] = (mapa[chave].produtos[r.produto]||0) + 1;
   });
-  return Object.entries(mapa).map(([chave,qtd])=>{
+  return Object.entries(mapa).map(([chave,m])=>{
     const [data,grupo,grupoFino,usuario] = chave.split("|");
-    return { data, grupo, grupoFino, colaborador:usuario, qtd };
+    return { data, grupo, grupoFino, colaborador:usuario, qtd:m.qtd, produtos:Object.assign({}, m.produtos) };
   });
 }
 
@@ -3420,7 +4135,7 @@ document.getElementById("btnImportTotvs").addEventListener("click", async ()=>{
   try{
     const buffer = await file.arrayBuffer();
     const texto = decodificarArquivo(buffer);
-    const { registros, erro, gruposNovos } = parseArquivoTotvs(texto);
+    const { registros, erro, gruposNovos, temProduto } = parseArquivoTotvs(texto);
 
     if(erro){
       msg.textContent = erro;
@@ -3449,16 +4164,20 @@ document.getElementById("btnImportTotvs").addEventListener("click", async ()=>{
            empilhar duas cópias. */
         id: "totvs-" + a.data + "-" + a.grupo + "-" + a.grupoFino + "-" + a.colaborador,
         data:a.data, grupo:a.grupo, grupoFino:a.grupoFino, colaborador:a.colaborador,
-        pedido:`${MARCADOR_IMPORTADO} (sem horário)`, qtd:a.qtd, inicio:"", fim:""
+        pedido:`${MARCADOR_IMPORTADO} (sem horário)`, qtd:a.qtd, inicio:"", fim:"",
+        /* códigos de produto e peças de cada um: é o que conta os modelos */
+        ...(Object.keys(a.produtos).length ? { produtos:a.produtos } : {})
       });
     });
     saveState();
 
     const datasOrdenadas = Array.from(datasDoArquivo).sort();
-    msg.textContent = `Importação concluída: ${agregados.length} lançamentos (${registros.length} itens brutos).`;
+    const nModelos = new Set(registros.map(r=>r.produto).filter(Boolean)).size;
+    msg.textContent = `Importação concluída: ${agregados.length} lançamentos (${registros.length} itens brutos${nModelos ? ", " + nModelos.toLocaleString("pt-BR") + " modelos diferentes" : ""}).`;
     msg.style.color = "var(--good)";
     let detalheTxt = `Período importado: ${datasOrdenadas[0]} a ${datasOrdenadas[datasOrdenadas.length-1]}.`;
     if(removidos > 0) detalheTxt += ` ${removidos} lançamento(s) importado(s) anteriormente para essas datas foram substituídos.`;
+    if(!temProduto) detalheTxt += ` Este arquivo não tem a coluna do código do produto (D3 Cod): os modelos diferentes dessas datas não serão contados.`;
     if(gruposNovos && gruposNovos.length > 0) detalheTxt += ` Novos códigos de grupo apareceram e foram adicionados em Configurações com peso zerado (classificados como Diversos por padrão): ${gruposNovos.join(", ")}. Defina o grupo macro e os valores de referência lá.`;
     detalhes.textContent = detalheTxt;
 
@@ -3470,7 +4189,7 @@ document.getElementById("btnImportTotvs").addEventListener("click", async ()=>{
         + (removidos > 0 ? ", " + removidos + " substituído(s)" : ""),
       { arquivo:input.files[0].name, lancamentos:agregados.length, itens:registros.length,
         de:datasOrdenadas[0], ate:datasOrdenadas[datasOrdenadas.length-1],
-        substituidos:removidos, gruposNovos:gruposNovos || [] });
+        substituidos:removidos, gruposNovos:gruposNovos || [], modelos:nModelos });
 
     input.value = "";
     renderAll();
@@ -3551,9 +4270,12 @@ function renderMetaDiariaHoras(entradasEquipe){
 
   const meta = state.metasProducao.metaHorasMinDia;
   const entradas = entradasEquipe.filter(l=> pessoas.some(n=>n.toLowerCase()===l.colaborador.toLowerCase()));
+  const demandasMes = demandasLogDoMes();
 
   container.innerHTML = pessoas.map(pessoa=>{
     const doPessoa = entradas.filter(l=>l.colaborador.toLowerCase()===pessoa.toLowerCase());
+    /* demandas do dia: o contexto de um dia com menos peças */
+    const demsPessoa = demandasMes.filter(d=>mesmaPessoa(pessoa, d.colaborador));
     const porDia = {};
     doPessoa.forEach(l=>{
       if(!porDia[l.data]) porDia[l.data] = { data:l.data, pecas:0, minutos:0 };
@@ -3596,6 +4318,7 @@ function renderMetaDiariaHoras(entradasEquipe){
         <td>${formatarDataBr(d.data)}</td>
         <td class="num">${d.pecas.toLocaleString("pt-BR")}</td>
         <td class="num">${horas.toFixed(1)}</td>
+        <td class="num">${celulaDemandasDia(demsPessoa, d.data)}</td>
         <td>${statusHtml}${avisoHtml}${motivoHtml}</td>
       </tr>`;
     }).join("");
@@ -3610,7 +4333,7 @@ function renderMetaDiariaHoras(entradasEquipe){
       </div>
       <div class="table-wrap" style="margin-bottom:0;">
         <table>
-          <thead><tr><th>Data</th><th class="num">Peças</th><th class="num">Horas equivalentes</th><th>Status</th></tr></thead>
+          <thead><tr><th>Data</th><th class="num">Peças</th><th class="num">Horas equivalentes</th><th class="num">Demandas no dia (h registradas)</th><th>Status</th></tr></thead>
           <tbody>${linhas}</tbody>
         </table>
       </div>
@@ -3691,8 +4414,8 @@ function removerClima(id){
 function fillObsSobreSelect(){
   const sel = document.getElementById("obsSobre");
   const valorAtual = sel.value;
-  const nomes = Array.from(new Set(state.equipe.map(p=>p.nome)));
-  sel.innerHTML = `<option value="">Equipe geral</option>` + nomes.map(n=>`<option value="${n}">${n}</option>`).join("");
+  const nomes = Array.from(new Set(state.equipe.filter(pessoaAtiva).map(p=>p.nome)));
+  sel.innerHTML = `<option value="">Equipe geral</option>` + nomes.map(n=>`<option value="${esc(n)}">${esc(n)}</option>`).join("");
   if(valorAtual) sel.value = valorAtual;
 }
 
@@ -3729,7 +4452,7 @@ function renderObservacoes(){
   tbl.innerHTML = linhas.map(o=>{
     return `<tr>
       <td>${formatarDataBr(o.data)}</td>
-      <td>${o.sobre}</td>
+      <td>${esc(o.sobre === "Equipe geral" ? o.sobre : nomeCadastro(o.sobre))}</td>
       <td>${o.texto}</td>
       <td><button class="del-btn" onclick="removerObservacao('${o.id}')">Excluir</button></td>
     </tr>`;
@@ -3742,6 +4465,80 @@ function removerObservacao(id){
   renderAll();
 }
 
+/* Dias de uma pessoa no mês, com peças, pontos (peso) e horas equivalentes */
+function resumoDiasPessoa(doPessoa){
+  const porDia = {};
+  doPessoa.forEach(l=>{
+    if(!porDia[l.data]) porDia[l.data] = { data:l.data, pecas:0, pontos:0, minutos:0 };
+    const d = porDia[l.data], q = Number(l.qtd||0);
+    d.pecas += q;
+    if(l.grupoFino) d.pontos += q*pesoPorUnidade(l.grupoFino);
+    d.minutos += minutosEstimadoLancamento(l);
+  });
+  return Object.values(porDia).sort((a,b)=>a.data.localeCompare(b.data));
+}
+
+/* Uma linha por pessoa. Melhor e pior dia saem dos PONTOS: 300 telas valem
+   mais que 300 baterias. Quem não tem pontos no mês (só lançamento manual,
+   sem código de grupo) é comparado pelas horas equivalentes. O pior dia é
+   o pior entre os dias em que a pessoa produziu: dia sem produção é folga
+   ou falta, não desempenho. */
+function renderResumoIndividual(entradas){
+  const tbl = document.getElementById("tblResumoIndividual");
+  const pessoasMeta = configMesSelecionado().pessoasComMeta;
+  const metaH = state.metasProducao.metaHorasMinDia;
+  const demandasMes = demandasLogDoMes();
+  const nomes = Array.from(new Set(entradas.map(l=>l.colaborador)));
+  if(nomes.length === 0){
+    tbl.innerHTML = `<tr><td colspan="9"><div class="empty"><div class="display">Sem dados no mês</div>Importe ou lance produção para ver o resumo.</div></td></tr>`;
+    return;
+  }
+  const linhas = nomes.map(nome=>{
+    const doPessoa = entradas.filter(l=>l.colaborador===nome);
+    const dias = resumoDiasPessoa(doPessoa);
+    const pecas = dias.reduce((s,d)=>s+d.pecas,0);
+    const pontos = dias.reduce((s,d)=>s+d.pontos,0);
+    const horasProd = dias.reduce((s,d)=>s+d.minutos,0)/60;
+    const dems = demandasMes.filter(d=>mesmaPessoa(nome, d.colaborador));
+    const horasDem = dems.reduce((s,d)=>s+minutosEntre(d.inicio,d.fim),0)/60;
+    const temMeta = pessoasMeta.some(n=>n.toLowerCase()===nome.toLowerCase());
+    let meta = null;
+    if(temMeta && metaH > 0){
+      const batidos = dias.filter(d=>{ const j = justificativaDoDia(d.data); return (j && j.metaConsiderada) || d.minutos/60 >= metaH; }).length;
+      meta = { batidos, dias:dias.length };
+    }
+    const crit = pontos > 0 ? "pontos" : "minutos";
+    const ord = dias.slice().sort((a,b)=> (b[crit]-a[crit]) || (b.pecas-a.pecas));
+    return { nome, temMeta, pecas, pontos, modelos:textoModelos(modelosDe(doPessoa)), horasProd, horasDem,
+             nDias:dias.length, meta, melhor:ord[0], pior: ord.length > 1 ? ord[ord.length-1] : null, dems };
+  }).sort((a,b)=> (Number(b.temMeta)-Number(a.temMeta)) || (b.pontos-a.pontos) || (b.pecas-a.pecas));
+
+  const celDia = (d, dems, comDemandas)=>{
+    if(!d) return "—";
+    let s = `<strong>${formatarDataCurta(d.data)}</strong><div class="cel-sub">${d.pecas.toLocaleString("pt-BR")} ${d.pecas === 1 ? "peça" : "peças"} · ${d.pontos > 0 ? d.pontos.toFixed(1) + " pts" : (d.minutos/60).toFixed(1) + " h equiv."}</div>`;
+    if(comDemandas){
+      const doDia = dems.filter(x=>x.data===d.data);
+      if(doDia.length) s += `<div class="cel-sub">demandas: ${textoDemandasDia(doDia.map(x=>({ demanda:x.demanda, minutos:minutosEntre(x.inicio,x.fim), status:x.status })))}</div>`;
+    }
+    return s;
+  };
+  tbl.innerHTML = linhas.map(r=>{
+    const metaTxt = !r.temMeta ? `<span class="badge neutro">sem meta</span>`
+      : (r.meta ? `${r.meta.batidos}/${r.meta.dias} dias<div class="cel-sub">${r.meta.dias ? Math.round(r.meta.batidos/r.meta.dias*100) : 0}%, mínimo de ${metaH}h equiv.</div>` : "—");
+    return `<tr>
+      <td><span class="dot-p" style="background:${corPessoa(r.nome)}"></span><strong>${esc(r.nome)}</strong></td>
+      <td class="num">${r.pecas.toLocaleString("pt-BR")}</td>
+      <td class="num">${r.pontos > 0 ? r.pontos.toFixed(1) : "—"}</td>
+      <td class="num" title="${esc(r.modelos.dica)}">${r.modelos.txt}</td>
+      <td class="num">${(r.horasProd + r.horasDem).toFixed(1)}<div class="cel-sub">${r.horasProd.toFixed(1)} prod. equiv. · ${r.horasDem.toFixed(1)} demandas</div></td>
+      <td class="num">${r.nDias ? Math.round(r.pecas/r.nDias).toLocaleString("pt-BR") : "—"}<div class="cel-sub">peças, ${r.nDias} dia(s)</div></td>
+      <td>${metaTxt}</td>
+      <td>${celDia(r.melhor, r.dems, false)}</td>
+      <td>${celDia(r.pior, r.dems, true)}</td>
+    </tr>`;
+  }).join("");
+}
+
 function renderDesempenho(){
   renderClimaBotoes();
   renderClima();
@@ -3749,6 +4546,7 @@ function renderDesempenho(){
   renderJustificativas();
   const entradas = lancamentosDoMes().filter(l=>estaNaEquipeProducao(l.colaborador));
   renderMetaDiariaHoras(entradas);
+  renderResumoIndividual(entradas);
   const colaboradores = {};
   entradas.forEach(l=>{
     const key = l.colaborador+"|"+l.grupo;
@@ -3779,6 +4577,7 @@ function renderDesempenho(){
     grid.innerHTML = nomesColaboradores.map(nome=>{
       const linhasPessoa = Object.values(colaboradores).filter(c=>c.nome===nome);
       const temMeta = temMetaNome(nome);
+      const mtCard = textoModelos(modelosDe(entradas.filter(l=>l.colaborador===nome)));
       let totalProduzido = 0, totalMeta = 0;
       const linhasHtml = linhasPessoa.map(c=>{
         totalProduzido += c.total;
@@ -3812,7 +4611,7 @@ function renderDesempenho(){
           <div class="pname"><span class="dot" style="background:${corPessoa(nome)}"></span>${nome}</div>
         </div>
         <div class="ptotal">${totalProduzido.toLocaleString("pt-BR")}</div>
-        <div class="psub">peças produzidas no mês, em ${linhasPessoa.length} grupo(s) de produto</div>
+        <div class="psub" title="${esc(mtCard.dica)}">peças produzidas no mês | <strong>${mtCard.txt}</strong> modelos diferentes · ${linhasPessoa.length} grupo(s) de produto</div>
         ${barraHtml}
         <div class="mini-table-wrap">
           <table>
@@ -4093,6 +4892,7 @@ document.getElementById("fileImport").addEventListener("change", (e)=>{
    INIT
 ============================================================ */
 function renderAll(){
+  pessoasZerarCache();
   fillGrupoSelect();
   renderDashboard();
   renderLancamentos();

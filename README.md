@@ -134,7 +134,8 @@ alguém use a chave publicável na mão. Os campos têm teto (`quem` 80,
 O que fica registrado: acesso, importação do TOTVS (arquivo, período,
 quantos lançamentos, quantos substituídos), importação de vendas médias,
 lançamento manual, exclusão, backup exportado, backup restaurado, "usar
-os dados deste PC", capacidade e metas.
+os dados deste PC", capacidade, metas, cadastro de pessoas (renomear,
+desativar, excluir, juntar) e demanda editada.
 
 Um acesso vale por **visita, não por F5**: quem recarrega cinco vezes
 testando alguma coisa não vira cinco linhas (janela de 30 min por nome).
@@ -153,6 +154,84 @@ mesmo trabalhando.
 O nome que aparece nas duas telas vem de tabela pública e escrita com a
 chave que está dentro do `index.html`. Nada que saia dali entra no HTML
 sem passar por `esc()`.
+
+## Pessoas: um cadastro, vários nomes
+
+A mesma pessoa chega ao painel com nomes diferentes. O TOTVS grava o login
+(`felipe.gomes` vira "Felipe"), o cadastro guarda o nome completo e cada
+demanda guarda o nome que estava no cadastro no dia do registro ("Pedro
+Henrique" e, depois, "Pedro Henrique Rodrigues da Silva"). **Nenhum
+registro é reescrito para acertar isso.** Trocar o `colaborador` de um
+lançamento importado mudaria o id dele (ver *Ids estáveis*), e a fusão com
+a nuvem passaria a ter dois. Quem diz quem é quem é o cadastro
+(`pessoaDoNome`), nesta ordem:
+
+1. o nome do cadastro;
+2. os **outros nomes** (`apelidos`) da pessoa;
+3. o primeiro nome, só quando **um único** cadastro tem aquele primeiro
+   nome. Com dois "Pedro", o painel não chuta: a tela pede o login de cada
+   um em "Outros nomes".
+
+Os campos `apelidos` e `ativo` são opcionais e **não** ganham valor padrão
+em `migrarEstado`: ausente quer dizer "sem apelidos" e "ativo". A base da
+fusão é o documento cru, então um padrão gravado ali faria cada PC achar
+que a equipe mudou.
+
+- **Renomear** guarda como "outro nome" todo nome que já levava à pessoa:
+  o antigo, o login do TOTVS e o nome de uma demanda velha.
+- **Desativar** tira a pessoa das listas de escolha ("Você é", Demandas e
+  Observações) e não esconde nada do histórico.
+- **Excluir** só sai para quem não tem registro nenhum. Com histórico, o
+  painel oferece desativar.
+- **Juntar**, em "Nomes repetidos ou sem cadastro", resolve nome duplicado
+  acrescentando um "outro nome". Não mexe em registro.
+
+Tudo isso vai para a aba Logs (ação `pessoa`). Editar ou apagar uma
+demanda também vai: editar grava `demanda` com antes e depois, apagar
+grava `exclusao`.
+
+## Ritmo da meta e capacidade
+
+Os **dias úteis** vão de segunda a sexta, sem feriados nacionais, Carnaval
+e Corpus Christi (`feriadosDoAno`, com a Páscoa calculada). A lista saiu
+dos dados: de janeiro a outubro de 2026 nenhum desses dias teve uma peça
+lançada. Já 08/09 e a segunda da Penha, que são feriados de Vitória,
+tiveram produção normal, por isso feriado municipal não entra. Sábado
+trabalhado soma no produzido e não vira dia útil. O dia de hoje só conta
+como fechado depois que tiver produção lançada, senão o "deveria ter
+produzido" cobraria o dia inteiro às 8 h.
+
+A **capacidade real** é a soma do que cada pessoa com meta entregou por dia
+trabalhado no mês. Quem ainda não produziu no mês entra pela meta diária.
+O **teto** vem de Configurações → Capacidade da equipe, convertido em
+peças pelo tempo padrão da mistura de produtos do mês. O veredito compara
+a necessidade por dia útil com a capacidade real: até 90% é suficiente,
+até 100% está perto do limite e acima disso a meta passa da capacidade.
+
+## Modelos diferentes
+
+Modelo é código de produto (coluna **D3 Cod** do export de bipagem), não
+peça. A importação passou a guardar, em cada lançamento, `produtos`:
+`{código: peças}`. A chave e o id do lançamento continuam os mesmos.
+Lançamento importado antes disso não tem o campo. A tela mostra "—" ou
+"≥ N" e pede para **reimportar o arquivo do TOTVS** daquelas datas: a
+reimportação substitui os mesmos ids, com as mesmas quantidades, e só
+acrescenta os códigos (conferido com o arquivo de 01/07 a 26/09/2026:
+1.514 lançamentos, nenhuma quantidade diferente). Custa uns 25 KB por mês
+no `jsonb`.
+
+## Horas: equivalentes x registradas
+
+O painel soma duas horas que não são a mesma coisa. Por isso cada tabela
+mostra as duas separadas e o total ao lado:
+
+- **horas equivalentes de produção**: uma estimativa, peças × tempo padrão
+  de cada produto (`minutosEstimadoLancamento`);
+- **horas registradas em demandas**: o início e o fim anotados na aba
+  Demandas.
+
+O status dos dias (mínimo de horas) continua calculado como antes. As
+demandas do dia aparecem ao lado só como contexto.
 
 ## Estrutura
 
