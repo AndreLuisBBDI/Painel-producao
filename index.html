@@ -15,6 +15,9 @@
 </script>
 <style>
 :root{
+  --f-titulo:'Manrope',system-ui,sans-serif;
+  --f-texto:'Inter',system-ui,sans-serif;
+  --f-num:'IBM Plex Mono',ui-monospace,monospace;
   --bg:#f4f5f7;
   --surface:#ffffff;
   --surface-2:#f7f8fa;
@@ -53,17 +56,20 @@
   --bad-bg:#3a1414;
 }
 *{box-sizing:border-box;}
+button,input,select,textarea{font-family:inherit;}
 html,body{margin:0;padding:0;}
 body{
   background:var(--bg);
   color:var(--text);
-  font-family:'Inter',sans-serif;
+  font-family:var(--f-texto);
+  line-height:1.45;
+  font-synthesis-weight:none;
   min-height:100vh;
   -webkit-font-smoothing:antialiased;
 }
 ::selection{background:var(--navy);color:#fff;}
-.mono{font-family:'IBM Plex Mono',monospace;}
-.display{font-family:'Manrope',sans-serif;}
+.mono{font-family:var(--f-num);}
+.display{font-family:var(--f-titulo);}
 
 /* ---- header ---- */
 header.topbar{
@@ -80,10 +86,10 @@ header.topbar{
   width:44px;height:44px;border-radius:8px;
   background:var(--navy);
   display:flex;align-items:center;justify-content:center;
-  font-family:'Manrope',sans-serif;font-weight:800;font-size:17px;color:#fff;letter-spacing:.3px;
+  font-family:var(--f-titulo);font-weight:800;font-size:16px;color:#fff;letter-spacing:.3px;
 }
 .brand h1{
-  font-family:'Manrope',sans-serif;font-weight:800;font-size:23px;letter-spacing:-.2px;
+  font-family:var(--f-titulo);font-weight:800;font-size:22px;letter-spacing:-.2px;
   margin:0;line-height:1.15;color:var(--text);
 }
 .brand p{margin:3px 0 0;color:var(--text-muted);font-size:13px;}
@@ -91,7 +97,7 @@ header.topbar{
 .month-select{display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
 .month-select select, .month-select input{
   background:var(--surface);border:1px solid var(--border);color:var(--text);
-  padding:8px 12px;border-radius:7px;font-family:'Inter',sans-serif;font-size:13px;
+  padding:8px 12px;border-radius:7px;font-family:var(--f-texto);font-size:13px;
 }
 
 /* ---- nav tabs ---- */
@@ -101,7 +107,7 @@ nav.tabs{
 }
 nav.tabs button{
   background:none;border:none;color:var(--text-muted);
-  font-family:'Manrope',sans-serif;font-size:14.5px;font-weight:700;letter-spacing:.1px;
+  font-family:var(--f-titulo);font-size:14px;font-weight:700;letter-spacing:0;
   padding:13px 18px;cursor:pointer;border-bottom:3px solid transparent;white-space:nowrap;
 }
 nav.tabs button:hover{color:var(--text);}
@@ -115,13 +121,13 @@ main{max-width:1200px;margin:0 auto;padding:28px 24px 80px;}
 .ponto{width:8px;height:8px;border-radius:50%;display:inline-block;flex:0 0 auto;}
 .ponto.verde{background:#22c55e;animation:pulsoOnline 2.2s infinite;}
 .ponto.cinza{background:var(--text-muted);opacity:.45;}
-.presenca-chip{display:inline-flex;align-items:center;gap:7px;background:var(--good-bg);color:var(--text);border-radius:20px;padding:6px 13px;font-size:12.5px;font-weight:600;font-family:'Inter';}
+.presenca-chip{display:inline-flex;align-items:center;gap:7px;background:var(--good-bg);color:var(--text);border-radius:20px;padding:6px 13px;font-size:12px;font-weight:600;font-family:var(--f-texto);}
 .presenca-chip em{font-style:normal;font-weight:500;color:var(--text-muted);}
-.presenca-chip small{font-weight:500;color:var(--text-muted);font-size:11.5px;}
+.presenca-chip small{font-weight:500;color:var(--text-muted);font-size:11px;}
 
 h2.section-title{
-  font-family:'Manrope',sans-serif;letter-spacing:-.1px;
-  font-size:18px;font-weight:800;margin:36px 0 14px;color:var(--text);
+  font-family:var(--f-titulo);letter-spacing:-.2px;
+  font-size:18px;font-weight:800;line-height:1.3;margin:36px 0 14px;color:var(--text);
   display:flex;align-items:center;gap:10px;
 }
 h2.section-title:first-child{margin-top:0;}
@@ -135,8 +141,8 @@ h2.section-title::before{content:"";width:4px;height:16px;background:var(--accen
 }
 .kpi-card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--border);}
 .kpi-card .label{font-size:12px;color:var(--text-muted);letter-spacing:.2px;margin-bottom:9px;font-weight:500;}
-.kpi-card .value{font-family:'IBM Plex Mono',monospace;font-size:26px;font-weight:600;line-height:1;color:var(--text);}
-.kpi-card .sub{font-size:12px;color:var(--text-muted);margin-top:7px;}
+.kpi-card .value{font-family:var(--f-num);font-size:26px;font-weight:600;line-height:1;color:var(--text);}
+.kpi-card .sub{font-size:12px;color:var(--text-muted);margin-top:7px;line-height:1.45;}
 .kpi-card.accent::before{background:var(--accent);}
 .kpi-card.accent .value{color:var(--accent);}
 .kpi-card.good::before{background:var(--good);}
@@ -147,22 +153,22 @@ h2.section-title::before{content:"";width:4px;height:16px;background:var(--accen
 .charts-grid{display:grid;grid-template-columns:1.3fr 1fr;gap:16px;margin-bottom:28px;}
 @media(max-width:860px){.charts-grid{grid-template-columns:1fr;}}
 .chart-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;box-shadow:0 1px 2px rgba(16,24,40,.04);}
-.chart-card h3{margin:0 0 14px;font-family:'Manrope',sans-serif;font-size:14px;color:var(--text-muted);font-weight:700;}
+.chart-card h3{margin:0 0 14px;font-family:var(--f-titulo);font-size:14px;color:var(--text-muted);font-weight:700;}
 
 /* ---- tables ---- */
 .table-wrap{background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow-x:auto;margin-bottom:24px;box-shadow:0 1px 2px rgba(16,24,40,.04);}
-table{width:100%;border-collapse:collapse;font-size:13.5px;}
+table{width:100%;border-collapse:collapse;font-size:14px;}
 th{
-  background:var(--surface-2);color:var(--text-muted);font-size:11.5px;
+  background:var(--surface-2);color:var(--text-muted);font-size:12px;
   letter-spacing:.2px;font-weight:600;text-align:left;padding:11px 14px;border-bottom:1px solid var(--border);
 }
-td{padding:11px 14px;border-bottom:1px solid var(--border);color:var(--text);}
+td{padding:11px 14px;border-bottom:1px solid var(--border);color:var(--text);line-height:1.45;font-variant-numeric:tabular-nums;}
 tr:last-child td{border-bottom:none;}
 tbody tr:hover{background:var(--surface-2);}
-td.num{font-family:'IBM Plex Mono',monospace;text-align:right;white-space:nowrap;}
+td.num{font-family:var(--f-num);text-align:right;white-space:nowrap;}
 th.num{text-align:right;}
 
-.badge{display:inline-block;padding:3px 11px;border-radius:20px;font-size:11.5px;font-weight:600;font-family:'Inter';white-space:nowrap;}
+.badge{display:inline-block;padding:3px 11px;border-radius:20px;font-size:12px;font-weight:600;font-family:var(--f-texto);white-space:nowrap;}
 .badge.good{background:var(--good-bg);color:var(--good);}
 .badge.warn{background:var(--warn-bg);color:var(--warn);}
 .badge.bad{background:var(--bad-bg);color:var(--bad);}
@@ -177,23 +183,23 @@ th.num{text-align:right;}
 .field label{display:block;font-size:12px;color:var(--text-muted);margin-bottom:6px;font-weight:500;}
 .field input,.field select{
   width:100%;background:var(--surface);border:1px solid var(--border);color:var(--text);
-  padding:9px 10px;border-radius:7px;font-family:'Inter';font-size:14px;
+  padding:9px 10px;border-radius:7px;font-family:var(--f-texto);font-size:14px;
 }
 .field input:focus,.field select:focus{outline:none;border-color:var(--navy);box-shadow:0 0 0 3px var(--navy-light);}
 .btn{
   background:var(--navy);color:#fff;border:none;padding:10px 20px;border-radius:7px;
-  font-family:'Manrope',sans-serif;font-weight:700;font-size:14px;
-  letter-spacing:.1px;cursor:pointer;margin-top:16px;
+  font-family:var(--f-titulo);font-weight:700;font-size:14px;
+  letter-spacing:0;cursor:pointer;margin-top:16px;
 }
 .btn:hover{filter:brightness(1.15);}
 .btn.secondary{background:var(--surface);color:var(--text);border:1px solid var(--border);}
 .btn.secondary:hover{filter:none;background:var(--surface-2);}
 .btn.danger{background:var(--bad);color:#fff;}
 .btn-sm{padding:5px 12px;font-size:12px;border-radius:6px;margin-top:0;}
-.del-btn{background:none;border:1px solid var(--border);color:var(--text-muted);padding:4px 10px;border-radius:6px;cursor:pointer;font-size:12px;white-space:nowrap;}
+.del-btn{background:none;border:1px solid var(--border);color:var(--text-muted);padding:4px 10px;border-radius:6px;cursor:pointer;font-family:var(--f-texto);font-size:12px;font-weight:500;white-space:nowrap;}
 .del-btn:hover{border-color:var(--bad);color:var(--bad);}
 
-.note{font-size:12.5px;color:var(--text-muted);margin:-6px 0 18px;line-height:1.55;max-width:820px;}
+.note{font-size:13px;color:var(--text-muted);margin:-6px 0 18px;line-height:1.55;max-width:820px;}
 .two-col{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
 @media(max-width:860px){.two-col{grid-template-columns:1fr;}}
 
@@ -201,40 +207,40 @@ th.num{text-align:right;}
 .people-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px;margin-bottom:28px;}
 .person-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;box-shadow:0 1px 2px rgba(16,24,40,.04);}
 .person-card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;}
-.person-card .pname{font-family:'Manrope',sans-serif;font-weight:800;font-size:16px;display:flex;align-items:center;gap:8px;}
+.person-card .pname{font-family:var(--f-titulo);font-weight:800;font-size:16px;display:flex;align-items:center;gap:8px;}
 .person-card .dot{width:10px;height:10px;border-radius:50%;display:inline-block;}
-.person-card .ptotal{font-family:'IBM Plex Mono',monospace;font-size:24px;font-weight:700;margin:8px 0 2px;}
+.person-card .ptotal{font-family:var(--f-num);font-size:26px;font-weight:600;line-height:1.15;margin:8px 0 2px;}
 .person-card .psub{font-size:12px;color:var(--text-muted);margin-bottom:12px;}
-.person-card table{font-size:12.5px;}
-.person-card th{padding:7px 10px;font-size:10.5px;}
+.person-card table{font-size:13px;}
+.person-card th{padding:7px 10px;font-size:11px;}
 .person-card td{padding:7px 10px;}
 .person-card .mini-table-wrap{border:1px solid var(--border);border-radius:8px;overflow-x:auto;margin-top:6px;}
 
 /* ---- meta diária blocks (Desempenho) ---- */
 .meta-diaria-bloco{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;margin-bottom:18px;box-shadow:0 1px 2px rgba(16,24,40,.04);}
-.meta-diaria-bloco h4{margin:0 0 12px;font-family:'Manrope',sans-serif;font-size:16px;font-weight:800;display:flex;align-items:center;gap:8px;}
+.meta-diaria-bloco h4{margin:0 0 12px;font-family:var(--f-titulo);font-size:16px;font-weight:800;display:flex;align-items:center;gap:8px;}
 .meta-diaria-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:14px;}
 .meta-diaria-stats .stat{background:var(--surface-2);border:1px solid var(--border);border-radius:8px;padding:10px 12px;}
-.meta-diaria-stats .stat .n{font-family:'IBM Plex Mono',monospace;font-size:18px;font-weight:700;}
-.meta-diaria-stats .stat .l{font-size:11px;color:var(--text-muted);margin-top:2px;}
+.meta-diaria-stats .stat .n{font-family:var(--f-num);font-size:18px;font-weight:600;}
+.meta-diaria-stats .stat .l{font-size:11px;color:var(--text-muted);margin-top:2px;line-height:1.35;}
 
 /* ---- clima do time ---- */
 .emoji-btn{background:var(--surface-2);border:1px solid var(--border);color:var(--text);border-radius:10px;padding:12px 18px;font-size:26px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px;}
-.emoji-btn span.emoji-label{font-size:11px;color:var(--text-muted);font-family:'Inter';}
+.emoji-btn span.emoji-label{font-size:11px;color:var(--text-muted);font-family:var(--f-texto);}
 .emoji-btn:hover{border-color:var(--navy);}
 .emoji-btn.selecionado{border-color:var(--accent);background:var(--accent-light);}
 
 .empty{text-align:center;padding:40px 20px;color:var(--text-muted);}
-.empty .display{font-size:17px;color:var(--text);margin-bottom:6px;font-weight:700;}
+.empty .display{font-size:16px;color:var(--text);margin-bottom:6px;font-weight:700;}
 /* ---- melhorias de 20/10/2026: ritmo da meta, resumo individual, cadastro ---- */
 .kpi-card.warn::before{background:var(--warn);}
 .kpi-card.warn .value{color:var(--warn);}
 .badge.neutro{background:var(--surface-3);color:var(--text-muted);}
-.cel-sub{font-size:11px;color:var(--text-muted);margin-top:2px;font-family:'Inter',sans-serif;font-weight:400;line-height:1.35;}
+.cel-sub{font-size:11px;color:var(--text-muted);margin-top:2px;font-family:var(--f-texto);font-weight:400;line-height:1.35;}
 .table-wrap.rolavel{overflow-x:auto;}
-.tbl-compacta th,.tbl-compacta td{padding:8px 10px;vertical-align:top;}
-.tbl-compacta td{font-size:12.5px;}
-.inp-tbl{background:var(--surface);border:1px solid var(--border);color:var(--text);padding:5px 7px;border-radius:6px;font-family:'Inter',sans-serif;font-size:12.5px;width:100%;min-width:90px;}
+.tbl-compacta th,.tbl-compacta td{padding:8px 10px;vertical-align:baseline;}
+.tbl-compacta td{font-size:13px;}
+.inp-tbl{background:var(--surface);border:1px solid var(--border);color:var(--text);padding:5px 7px;border-radius:6px;font-family:var(--f-texto);font-size:13px;width:100%;min-width:90px;}
 .acoes{display:flex;gap:6px;flex-wrap:nowrap;}
 #tblEquipe .acoes{flex-wrap:wrap;}
 .dot-p{width:9px;height:9px;border-radius:50%;display:inline-block;margin-right:6px;}
@@ -249,12 +255,12 @@ td .cel-sub.nw,.cel-sub.nw{white-space:nowrap;}
 @media(max-width:900px){.kpi-grid.kpi-4,.kpi-grid.kpi-3{grid-template-columns:repeat(2,minmax(0,1fr));}}
 @media(max-width:520px){.kpi-grid.kpi-4,.kpi-grid.kpi-3{grid-template-columns:1fr;}}
 .kpi-card .value small{font-size:16px;font-weight:500;color:var(--text-muted);}
-.kpi-card .value.texto{font-family:'Manrope',sans-serif;font-weight:800;font-size:22px;line-height:1.2;letter-spacing:-.2px;}
-.kpi-card .value.texto-longo{font-family:'Manrope',sans-serif;font-weight:700;font-size:15px;line-height:1.4;}
+.kpi-card .value.texto{font-family:var(--f-titulo);font-weight:800;font-size:22px;line-height:1.2;letter-spacing:-.2px;}
+.kpi-card .value.texto-longo{font-family:var(--f-titulo);font-weight:700;font-size:16px;line-height:1.4;}
 .charts-grid.tabela-larga{grid-template-columns:minmax(0,1fr) minmax(0,1.45fr);}
 @media(max-width:860px){.charts-grid.tabela-larga{grid-template-columns:1fr;}}
 #presencaLista > .empty{flex:1 1 100%;}
-.cel-nome{min-width:170px;}
+.cel-nome{min-width:170px;white-space:nowrap;}
 .cel-texto{min-width:180px;}
 .cel-situacao{min-width:130px;}
 .cel-dem-dia{min-width:170px;text-align:left;}
@@ -265,6 +271,14 @@ td .cel-sub.nw,.cel-sub.nw{white-space:nowrap;}
 #dColaborador{padding-right:5px;}
 #btnTema{white-space:nowrap;}
 .month-select label{white-space:nowrap;}
+/* ---- textos explicativos (21/10/2026): resumo curto, "Ver mais" abre o texto inteiro ---- */
+.nota-completa{display:none;}
+.note.aberta .nota-resumo{display:none;}
+.note.aberta .nota-completa{display:inline;}
+.nota-toggle{background:none;border:none;padding:0;margin-left:2px;font:inherit;font-weight:600;color:var(--navy);cursor:pointer;white-space:nowrap;}
+.nota-toggle:hover{text-decoration:underline;}
+.nota-toggle:focus-visible{outline:2px solid var(--navy);outline-offset:2px;border-radius:3px;}
+@media(max-width:600px){.person-card th,.person-card td{padding-left:8px;padding-right:8px;}}
 @media(max-width:600px){
   .topbar-inner{padding:14px 16px 12px;gap:12px;}
   .month-select{width:100%;}
@@ -287,7 +301,7 @@ td .cel-sub.nw,.cel-sub.nw{white-space:nowrap;}
       </div>
     </div>
     <div class="month-select">
-      <label style="font-size:12.5px;color:var(--text-muted);">Você é:</label>
+      <label style="font-size:13px;color:var(--text-muted);">Você é:</label>
       <select id="selIdentidade"></select>
       <select id="filterMonth"></select>
       <input type="number" id="filterYear" min="2020" max="2100" style="width:90px">
@@ -312,7 +326,7 @@ td .cel-sub.nw,.cel-sub.nw{white-space:nowrap;}
   <!-- =============== DASHBOARD =============== -->
   <section class="view active" id="view-dashboard">
     <h2 class="section-title">Indicadores do mês</h2>
-    <p class="note">Visão geral do que a equipe entregou no mês selecionado: quanto foi produzido, se a meta foi batida, quantas demandas ficaram para trás e quantos pedidos saíram no prazo.</p>
+    <p class="note" data-resumo="Resumo do mês: produção, meta, demandas atrasadas e pedidos no prazo.">Visão geral do que a equipe entregou no mês selecionado: quanto foi produzido, se a meta foi batida, quantas demandas ficaram para trás e quantos pedidos saíram no prazo.</p>
     <div class="kpi-grid kpi-4">
       <div class="kpi-card accent"><div class="label">Peças produzidas</div><div class="value" id="kpiPecas">0</div><div class="sub">no mês selecionado</div></div>
       <div class="kpi-card" id="kpiMetaPctCard"><div class="label">Meta batida no mês</div><div class="value" id="kpiMetaPct">0%</div><div class="sub">produzido vs. meta, todos os grupos</div></div>
@@ -325,7 +339,7 @@ td .cel-sub.nw,.cel-sub.nw{white-space:nowrap;}
     </div>
 
     <h2 class="section-title">Meta combinada do mês</h2>
-    <p class="note">Meta definida em Configurações → "Metas diárias de produção". Soma a produção de todas as pessoas configuradas ali. O ritmo esperado reparte a meta igualmente pelos dias úteis do mês: segunda a sexta, sem feriados nacionais, Carnaval e Corpus Christi (dias em que a produção nunca teve lançamento). Sábado trabalhado soma no produzido, mas não conta como dia útil. O dia de hoje só conta como dia fechado depois que tiver produção lançada.</p>
+    <p class="note" data-resumo="Quanto já foi produzido, quanto falta e o ritmo necessário até o fim do mês.">Meta definida em Configurações → "Metas diárias de produção". Soma a produção de todas as pessoas configuradas ali. O ritmo esperado reparte a meta igualmente pelos dias úteis do mês: segunda a sexta, sem feriados nacionais, Carnaval e Corpus Christi (dias em que a produção nunca teve lançamento). Sábado trabalhado soma no produzido, mas não conta como dia útil. O dia de hoje só conta como dia fechado depois que tiver produção lançada.</p>
     <div class="kpi-grid kpi-3">
       <div class="kpi-card" id="kpiMetaCombinadaCard"><div class="label" id="kpiMetaCombinadaLabel">Produzido pela equipe com meta</div><div class="value" id="kpiMetaCombinadaValor">0 / 0</div><div class="sub" id="kpiMetaCombinadaSub">0% da meta combinada do mês</div></div>
       <div class="kpi-card"><div class="label">Falta para bater a meta</div><div class="value" id="kpiMetaCombinadaFalta">0</div><div class="sub">peças até o fim do mês</div></div>
@@ -336,15 +350,15 @@ td .cel-sub.nw,.cel-sub.nw{white-space:nowrap;}
     </div>
 
     <h2 class="section-title">Capacidade da equipe x meta</h2>
-    <p class="note">Compara o que falta para a meta com o que a equipe consegue entregar nos dias úteis que restam. A <strong>capacidade real</strong> é o ritmo que cada pessoa com meta teve neste mês (peças por dia trabalhado). Quem ainda não produziu no mês entra pela meta diária. O <strong>teto pela configuração</strong> usa Configurações → Capacidade da equipe (pessoas × horas/dia × eficiência), convertido em peças pelo tempo padrão dos produtos feitos no mês. Até 90% da capacidade real: suficiente. De 90% a 100%: perto do limite. Acima de 100%: a meta passa da capacidade.</p>
+    <p class="note" data-resumo="Mostra se a equipe consegue entregar o que falta para a meta nos dias úteis restantes.">Compara o que falta para a meta com o que a equipe consegue entregar nos dias úteis que restam. A <strong>capacidade real</strong> é o ritmo que cada pessoa com meta teve neste mês (peças por dia trabalhado). Quem ainda não produziu no mês entra pela meta diária. O <strong>teto pela configuração</strong> usa Configurações → Capacidade da equipe (pessoas × horas/dia × eficiência), convertido em peças pelo tempo padrão dos produtos feitos no mês. Até 90% da capacidade real: suficiente. De 90% a 100%: perto do limite. Acima de 100%: a meta passa da capacidade.</p>
     <div class="kpi-grid" id="capacidadeMetaGrid"></div>
 
     <h2 class="section-title">Destaque do mês</h2>
-    <p class="note">Quem mais entregou entre quem tem meta de produção — em peças e em pontos (peso produzido, que já pesa a dificuldade de cada produto).</p>
+    <p class="note" data-resumo="Quem mais entregou entre quem tem meta de produção, em peças e em pontos.">Quem mais entregou entre quem tem meta de produção — em peças e em pontos (peso produzido, que já pesa a dificuldade de cada produto).</p>
     <div class="kpi-grid" id="destaqueMesGrid"></div>
 
     <h2 class="section-title">Comparativo de horas trabalhadas — Produção</h2>
-    <p class="note">Compara o mês selecionado inteiro entre as pessoas de produção: total de horas, média por dia trabalhado e quantos dias cada um bateu o mínimo configurado. O total soma duas horas diferentes, separadas abaixo do número: as <strong>horas equivalentes de produção</strong> (estimativa: peças × tempo padrão de cada produto) e as <strong>horas registradas em demandas</strong> (início e fim anotados na aba Demandas).</p>
+    <p class="note" data-resumo="Horas de cada pessoa de produção no mês, com média por dia e dias dentro da meta.">Compara o mês selecionado inteiro entre as pessoas de produção: total de horas, média por dia trabalhado e quantos dias cada um bateu o mínimo configurado. O total soma duas horas diferentes, separadas abaixo do número: as <strong>horas equivalentes de produção</strong> (estimativa: peças × tempo padrão de cada produto) e as <strong>horas registradas em demandas</strong> (início e fim anotados na aba Demandas).</p>
     <div class="charts-grid tabela-larga">
       <div class="chart-card">
         <h3>Horas totais no mês por pessoa</h3>
@@ -370,7 +384,7 @@ td .cel-sub.nw,.cel-sub.nw{white-space:nowrap;}
     </div>
 
     <h2 class="section-title">Produção diária por colaborador</h2>
-    <p class="note">Escolha "Todos" para comparar o total de peças por dia entre colaboradores, ou selecione uma pessoa para ver quais produtos ela produziu em cada dia.</p>
+    <p class="note" data-resumo="Compare as peças por dia entre colaboradores ou veja os produtos de uma pessoa.">Escolha "Todos" para comparar o total de peças por dia entre colaboradores, ou selecione uma pessoa para ver quais produtos ela produziu em cada dia.</p>
     <div class="form-card" style="margin-bottom:16px;">
       <div class="field" style="max-width:320px;"><label>Ver</label><select id="selVisaoDiaria"></select></div>
     </div>
@@ -382,7 +396,7 @@ td .cel-sub.nw,.cel-sub.nw{white-space:nowrap;}
     </div>
 
     <h2 class="section-title">Produção por colaborador e grupo</h2>
-    <p class="note">Quanto cada colaborador produziu de cada grupo de produto no mês — todos atuam em todos os grupos, então essa é a visão real, sem atribuir um grupo a uma única pessoa.</p>
+    <p class="note" data-resumo="Peças de cada colaborador por grupo de produto no mês.">Quanto cada colaborador produziu de cada grupo de produto no mês — todos atuam em todos os grupos, então essa é a visão real, sem atribuir um grupo a uma única pessoa.</p>
     <div class="table-wrap">
       <table>
         <thead><tr><th>Colaborador</th><th class="num">Baterias</th><th class="num">Teclados</th><th class="num">Fontes</th><th class="num">Telas</th><th class="num">Diversos</th><th class="num">Total</th></tr></thead>
@@ -391,7 +405,7 @@ td .cel-sub.nw,.cel-sub.nw{white-space:nowrap;}
     </div>
 
     <h2 class="section-title">Meta de produção por grupo (equipe toda)</h2>
-    <p class="note">Meta é do grupo como um todo, somando a produção de todos os colaboradores — não de uma pessoa específica. A coluna "Meta mensal" é <strong>editável</strong> — clique no número e digite o valor que quiser; o status recalcula na hora e o valor já entra automaticamente na divisão por pessoa em Desempenho → "Desempenho por colaborador". Fica destacado em laranja quando ajustado manualmente; apague o campo pra voltar ao cálculo automático (vendas médias + margem, configurável em Configurações).</p>
+    <p class="note" data-resumo="Meta mensal de cada grupo, somando a equipe toda. O valor da meta pode ser editado.">Meta é do grupo como um todo, somando a produção de todos os colaboradores — não de uma pessoa específica. A coluna "Meta mensal" é <strong>editável</strong> — clique no número e digite o valor que quiser; o status recalcula na hora e o valor já entra automaticamente na divisão por pessoa em Desempenho → "Desempenho por colaborador". Fica destacado em laranja quando ajustado manualmente; apague o campo pra voltar ao cálculo automático (vendas médias + margem, configurável em Configurações).</p>
     <div class="table-wrap">
       <table>
         <thead><tr><th>Grupo</th><th class="num">Produzido</th><th class="num">Meta mensal</th><th>Progresso</th><th>Status</th></tr></thead>
@@ -403,14 +417,14 @@ td .cel-sub.nw,.cel-sub.nw{white-space:nowrap;}
   <!-- =============== LANÇAMENTOS =============== -->
   <section class="view" id="view-lancamentos">
     <h2 class="section-title">Importar arquivo diário (TOTVS)</h2>
-    <p class="note">Exporte o relatório de bipagem do TOTVS (mesmo formato do arquivo "GESTAO") e solte aqui. O sistema identifica colaborador, grupo e data de cada linha, agrupa automaticamente por dia, e lança tudo sozinho — sem precisar digitar nada. Se importar o mesmo dia duas vezes, a segunda importação substitui a primeira (não duplica).</p>
+    <p class="note" data-resumo="Solte aqui o relatório de bipagem do TOTVS: o painel lança tudo sozinho, sem duplicar.">Exporte o relatório de bipagem do TOTVS (mesmo formato do arquivo "GESTAO") e solte aqui. O sistema identifica colaborador, grupo e data de cada linha, agrupa automaticamente por dia, e lança tudo sozinho — sem precisar digitar nada. Se importar o mesmo dia duas vezes, a segunda importação substitui a primeira (não duplica).</p>
     <div class="form-card">
       <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;">
         <input type="file" id="fileImportTotvs" accept=".csv,.txt">
         <button class="btn" id="btnImportTotvs">Processar arquivo</button>
         <span id="importMsg" style="color:var(--text-muted);font-size:13px;"></span>
       </div>
-      <div id="importDetails" style="margin-top:12px;font-size:12.5px;color:var(--text-muted);line-height:1.6;"></div>
+      <div id="importDetails" style="margin-top:12px;font-size:13px;color:var(--text-muted);line-height:1.6;"></div>
     </div>
 
     <h2 class="section-title">Novo lançamento manual</h2>
@@ -443,7 +457,7 @@ td .cel-sub.nw,.cel-sub.nw{white-space:nowrap;}
   <!-- =============== PEDIDOS (controle de prazo) =============== -->
   <section class="view" id="view-pedidos">
     <h2 class="section-title">Registrar atendimento do dia</h2>
-    <p class="note">Registre o ciclo completo de um dia de atendimento: quando os pedidos chegaram, quando o relatório foi liberado, e quando produção + separação terminaram. Isso mede o prazo real de entrega — diferente da aba Lançamentos, que mede peças por colaborador.</p>
+    <p class="note" data-resumo="Registre o ciclo de cada dia de pedidos para medir o prazo real de entrega.">Registre o ciclo completo de um dia de atendimento: quando os pedidos chegaram, quando o relatório foi liberado, e quando produção + separação terminaram. Isso mede o prazo real de entrega — diferente da aba Lançamentos, que mede peças por colaborador.</p>
     <div class="form-card">
       <div class="form-grid">
         <div class="field"><label>Data</label><input type="date" id="pData"></div>
@@ -476,7 +490,7 @@ td .cel-sub.nw,.cel-sub.nw{white-space:nowrap;}
     </div>
 
     <div class="form-card">
-      <p class="note" style="margin-top:0;">Defina a partir de quantas peças um pedido é "grande" e até quantas é "pequeno" — tudo que ficar no meio vira "médio", com sua própria meta. Assim nenhum pedido fica sem meta de prazo.</p>
+      <p class="note" data-resumo="Define o que é pedido grande, médio e pequeno, cada um com sua meta de prazo." style="margin-top:0;">Defina a partir de quantas peças um pedido é "grande" e até quantas é "pequeno" — tudo que ficar no meio vira "médio", com sua própria meta. Assim nenhum pedido fica sem meta de prazo.</p>
       <div class="form-grid">
         <div class="field"><label>A partir de quantas peças é "grande"</label><input type="number" id="limiarGrandeInput" min="1"></div>
         <div class="field"><label>Até quantas peças é "pequeno"</label><input type="number" id="limiarPequenoInput" min="0"></div>
@@ -498,7 +512,7 @@ td .cel-sub.nw,.cel-sub.nw{white-space:nowrap;}
     </div>
 
     <h2 class="section-title">Precisamos contratar mais gente?</h2>
-    <p class="note">Usa o ritmo real da equipe (peças/hora por pessoa) medido nos registros acima — não uma estimativa — para calcular quantas pessoas seriam necessárias para dar conta da demanda mensal configurada em Configurações, dentro da capacidade atual (horas/dia, dias úteis e eficiência).</p>
+    <p class="note" data-resumo="Quantas pessoas a demanda do mês pede, pelo ritmo real da equipe.">Usa o ritmo real da equipe (peças/hora por pessoa) medido nos registros acima — não uma estimativa — para calcular quantas pessoas seriam necessárias para dar conta da demanda mensal configurada em Configurações, dentro da capacidade atual (horas/dia, dias úteis e eficiência).</p>
     <div class="kpi-grid" id="kpiContratacaoReal"></div>
   </section>
 
@@ -506,7 +520,7 @@ td .cel-sub.nw,.cel-sub.nw{white-space:nowrap;}
 
   <section class="view" id="view-desempenho">
     <h2 class="section-title">Como o time está hoje?</h2>
-    <p class="note">Um termômetro rápido do clima da equipe — clique no emoji que melhor representa o dia. Fica registrado com a data, pra você acompanhar a tendência ao longo do mês.</p>
+    <p class="note" data-resumo="Clique no emoji que melhor representa o dia da equipe.">Um termômetro rápido do clima da equipe — clique no emoji que melhor representa o dia. Fica registrado com a data, pra você acompanhar a tendência ao longo do mês.</p>
     <div class="form-card">
       <div class="form-grid">
         <div class="field" style="max-width:200px;"><label>Data</label><input type="date" id="climaData"></div>
@@ -522,7 +536,7 @@ td .cel-sub.nw,.cel-sub.nw{white-space:nowrap;}
     </div>
 
     <h2 class="section-title">Observações e pareceres</h2>
-    <p class="note">Espaço para anotar como o pessoal está se saindo — destaques de comportamento, pontos de atenção, ou uma avaliação geral do time. Pode ser sobre uma pessoa específica ou sobre a equipe como um todo.</p>
+    <p class="note" data-resumo="Anotações sobre a equipe ou sobre uma pessoa específica.">Espaço para anotar como o pessoal está se saindo — destaques de comportamento, pontos de atenção, ou uma avaliação geral do time. Pode ser sobre uma pessoa específica ou sobre a equipe como um todo.</p>
     <div class="form-card">
       <div class="form-grid">
         <div class="field"><label>Data</label><input type="date" id="obsData"></div>
@@ -543,7 +557,7 @@ td .cel-sub.nw,.cel-sub.nw{white-space:nowrap;}
     </div>
 
     <h2 class="section-title">Resumo individual do mês</h2>
-    <p class="note">Uma linha por pessoa da equipe dos painéis. <strong>Pontos</strong> é o peso produzido (cada peça vale conforme a dificuldade do produto, ver Configurações → Pesos por grupo). <strong>Modelos</strong> são códigos de produto diferentes, não peças. <strong>Horas</strong> = horas equivalentes de produção + horas registradas em demandas. <strong>Meta cumprida</strong> conta os dias que bateram o mínimo de horas equivalentes, como no bloco "Cumprimento da meta diária". Melhor e pior dia são escolhidos pelos pontos, não só pelas peças, e o pior dia mostra as demandas registradas nele.</p>
+    <p class="note" data-resumo="Os números do mês de cada pessoa, numa linha só.">Uma linha por pessoa da equipe dos painéis. <strong>Pontos</strong> é o peso produzido (cada peça vale conforme a dificuldade do produto, ver Configurações → Pesos por grupo). <strong>Modelos</strong> são códigos de produto diferentes, não peças. <strong>Horas</strong> = horas equivalentes de produção + horas registradas em demandas. <strong>Meta cumprida</strong> conta os dias que bateram o mínimo de horas equivalentes, como no bloco "Cumprimento da meta diária". Melhor e pior dia são escolhidos pelos pontos, não só pelas peças, e o pior dia mostra as demandas registradas nele.</p>
     <div class="table-wrap rolavel">
       <table class="tbl-compacta">
         <thead><tr><th>Colaborador</th><th class="num">Peças</th><th class="num">Pontos</th><th class="num">Modelos</th><th class="num">Horas</th><th class="num">Média/dia</th><th>Meta cumprida</th><th>Melhor dia</th><th>Pior dia</th></tr></thead>
@@ -552,11 +566,11 @@ td .cel-sub.nw,.cel-sub.nw{white-space:nowrap;}
     </div>
 
     <h2 class="section-title">Desempenho por colaborador</h2>
-    <p class="note">Cada card é uma pessoa. A meta é estimada dividindo a meta do grupo (editável no Painel → "Meta de produção por grupo") pelo número de colaboradores <strong>com meta</strong> que produziram nele no mês. Meta e status só aparecem para quem está em Configurações → "Quem tem meta de produção" (hoje: Arthur, Felipe e Kauan) — Danielly e Samira aparecem com as peças produzidas, mas sem cobrança de meta, já que cuidam de separação e só produzem em apoio.</p>
+    <p class="note" data-resumo="Um card por pessoa, com a meta estimada a partir da meta do grupo.">Cada card é uma pessoa. A meta é estimada dividindo a meta do grupo (editável no Painel → "Meta de produção por grupo") pelo número de colaboradores <strong>com meta</strong> que produziram nele no mês. Meta e status só aparecem para quem está em Configurações → "Quem tem meta de produção" (hoje: Arthur, Felipe e Kauan) — Danielly e Samira aparecem com as peças produzidas, mas sem cobrança de meta, já que cuidam de separação e só produzem em apoio.</p>
     <div class="people-grid" id="gridDesempenho"></div>
 
     <h2 class="section-title">Justificativas do dia</h2>
-    <p class="note">Registre o motivo quando a meta não for batida (ou marque que deve ser considerada cumprida mesmo assim, como no caso de dias com produção exclusiva de itens mais demorados). A justificativa aparece junto do dia correspondente na tabela de cumprimento de meta logo abaixo.</p>
+    <p class="note" data-resumo="Registre o motivo quando a meta do dia não for batida.">Registre o motivo quando a meta não for batida (ou marque que deve ser considerada cumprida mesmo assim, como no caso de dias com produção exclusiva de itens mais demorados). A justificativa aparece junto do dia correspondente na tabela de cumprimento de meta logo abaixo.</p>
     <div class="form-card">
       <div class="form-grid">
         <div class="field"><label>Data</label><input type="date" id="jData"></div>
@@ -576,11 +590,11 @@ td .cel-sub.nw,.cel-sub.nw{white-space:nowrap;}
     </div>
 
     <h2 class="section-title">Cumprimento da meta diária (horas equivalentes)</h2>
-    <p class="note">A meta de produção vale só para <strong id="pessoasComMetaRef">—</strong>. "Horas equivalentes" é uma <strong>estimativa</strong>, não hora batida no relógio: cada peça produzida naquele dia é multiplicada pelo tempo padrão daquele produto específico (em minutos/peça, configurado em Configurações → Pesos por grupo ou Grupos de produto), tudo somado e dividido por 60. Isso permite comparar dias com mistura de produtos diferentes (ex: tela, teclado e SSD no mesmo dia) contra um único mínimo de horas. Se aparecer um valor impossível (acima de 24h num dia), o sistema mostra um alerta — geralmente é sinal de que o "tempo padrão" de algum produto está configurado alto demais para o volume real produzido naquele dia, e vale revisar em Configurações. Um bloco por pessoa, dias em ordem cronológica. Dias com justificativa cadastrada mostram o motivo logo abaixo do status.</p>
+    <p class="note" data-resumo="Horas equivalentes de cada dia comparadas com o mínimo da meta, um bloco por pessoa.">A meta de produção vale só para <strong id="pessoasComMetaRef">—</strong>. "Horas equivalentes" é uma <strong>estimativa</strong>, não hora batida no relógio: cada peça produzida naquele dia é multiplicada pelo tempo padrão daquele produto específico (em minutos/peça, configurado em Configurações → Pesos por grupo ou Grupos de produto), tudo somado e dividido por 60. Isso permite comparar dias com mistura de produtos diferentes (ex: tela, teclado e SSD no mesmo dia) contra um único mínimo de horas. Se aparecer um valor impossível (acima de 24h num dia), o sistema mostra um alerta — geralmente é sinal de que o "tempo padrão" de algum produto está configurado alto demais para o volume real produzido naquele dia, e vale revisar em Configurações. Um bloco por pessoa, dias em ordem cronológica. Dias com justificativa cadastrada mostram o motivo logo abaixo do status.</p>
     <div id="blocosMetaDiaria"></div>
 
     <h2 class="section-title">Peso produzido por colaborador</h2>
-    <p class="note">Usa o peso por unidade configurado em Configurações → Pesos por grupo (TOTVS) para comparar colaboradores considerando que alguns itens levam bem mais tempo que outros. Só conta lançamentos importados do TOTVS (que trazem o código de grupo original) — lançamentos manuais ainda não entram nesse cálculo.</p>
+    <p class="note" data-resumo="Compara colaboradores pelo peso produzido, que considera a dificuldade de cada item.">Usa o peso por unidade configurado em Configurações → Pesos por grupo (TOTVS) para comparar colaboradores considerando que alguns itens levam bem mais tempo que outros. Só conta lançamentos importados do TOTVS (que trazem o código de grupo original) — lançamentos manuais ainda não entram nesse cálculo.</p>
     <div class="table-wrap">
       <table>
         <thead><tr><th>Colaborador</th><th class="num">Peso total no mês</th><th class="num">Dias com dados de peso</th><th class="num">Peso médio/dia</th></tr></thead>
@@ -592,7 +606,7 @@ td .cel-sub.nw,.cel-sub.nw{white-space:nowrap;}
   <!-- =============== DEMANDAS =============== -->
   <section class="view" id="view-demandas">
     <h2 class="section-title">Registrar demanda executada</h2>
-    <p class="note">Para cada colaborador, registre qual demanda ele executou, quanto tempo levou e se ficou dentro do esperado. Se atrasou porque estava fazendo outra coisa mais urgente, registre o motivo — isso ajuda a enxergar sobrecarga real, não só "não fez".</p>
+    <p class="note" data-resumo="Registre a demanda executada, o tempo gasto e, se atrasou, o motivo.">Para cada colaborador, registre qual demanda ele executou, quanto tempo levou e se ficou dentro do esperado. Se atrasou porque estava fazendo outra coisa mais urgente, registre o motivo — isso ajuda a enxergar sobrecarga real, não só "não fez".</p>
     <div class="form-card">
       <div class="form-grid">
         <div class="field field-larga"><label>Colaborador</label><select id="dColaborador"></select></div>
@@ -617,7 +631,7 @@ td .cel-sub.nw,.cel-sub.nw{white-space:nowrap;}
     </div>
 
     <h2 class="section-title">Demandas em andamento</h2>
-    <p class="note">Quando uma demanda fica "Em andamento", ela aparece aqui até você indicar a hora que terminou. Preencha a hora fim e clique em "Concluir" para marcar como feita.</p>
+    <p class="note" data-resumo="Demandas em andamento ficam aqui até alguém informar a hora de término.">Quando uma demanda fica "Em andamento", ela aparece aqui até você indicar a hora que terminou. Preencha a hora fim e clique em "Concluir" para marcar como feita.</p>
     <div class="table-wrap">
       <table>
         <thead><tr><th>Data</th><th>Colaborador</th><th>Demanda</th><th class="num">Hora início</th><th>Hora fim</th><th></th></tr></thead>
@@ -626,7 +640,7 @@ td .cel-sub.nw,.cel-sub.nw{white-space:nowrap;}
     </div>
 
     <h2 class="section-title">Demandas registradas no mês</h2>
-    <p class="note">Todas as demandas do mês selecionado: concluídas, em andamento ou atrasadas. "Editar" corrige data, pessoa, demanda, horários, status e motivo. "Excluir" pede confirmação. As duas ações ficam registradas na aba Logs.</p>
+    <p class="note" data-resumo="Todas as demandas do mês, com opção de editar e excluir.">Todas as demandas do mês selecionado: concluídas, em andamento ou atrasadas. "Editar" corrige data, pessoa, demanda, horários, status e motivo. "Excluir" pede confirmação. As duas ações ficam registradas na aba Logs.</p>
     <div class="form-card" style="margin-bottom:16px;">
       <div class="field" style="max-width:320px;"><label>Colaborador</label><select id="filtroColabDemandas"></select></div>
     </div>
@@ -662,7 +676,7 @@ td .cel-sub.nw,.cel-sub.nw{white-space:nowrap;}
     </div>
 
     <h2 class="section-title">Horas trabalhadas por dia — Produção</h2>
-    <p class="note">Calculado automaticamente — não precisa preencher nada manualmente. Para cada peça lançada ou importada, o sistema estima o tempo gasto usando o tempo padrão do produto (mesmo cálculo do "Cumprimento da meta diária"), e soma o tempo de Demandas registradas nesta aba. As duas horas ficam em colunas separadas: <strong>horas equivalentes</strong> são uma estimativa (peças × tempo padrão), <strong>horas registradas</strong> são o início e o fim anotados em cada demanda. O total é o que se compara com o mínimo. Compara com o mínimo configurado em Configurações → Metas diárias de produção (hoje: <span id="metaHorasRef">—</span>h/dia).</p>
+    <p class="note" data-resumo="Horas de cada pessoa por dia, calculadas sozinhas e comparadas com o mínimo.">Calculado automaticamente — não precisa preencher nada manualmente. Para cada peça lançada ou importada, o sistema estima o tempo gasto usando o tempo padrão do produto (mesmo cálculo do "Cumprimento da meta diária"), e soma o tempo de Demandas registradas nesta aba. As duas horas ficam em colunas separadas: <strong>horas equivalentes</strong> são uma estimativa (peças × tempo padrão), <strong>horas registradas</strong> são o início e o fim anotados em cada demanda. O total é o que se compara com o mínimo. Compara com o mínimo configurado em Configurações → Metas diárias de produção (hoje: <span id="metaHorasRef">—</span>h/dia).</p>
     <div class="form-card" style="margin-bottom:16px;">
       <div class="field" style="max-width:220px;"><label>Ver um dia específico (opcional)</label><input type="date" id="filtroDiaHorasProducao"></div>
     </div>
@@ -674,7 +688,7 @@ td .cel-sub.nw,.cel-sub.nw{white-space:nowrap;}
     </div>
 
     <h2 class="section-title">Horas trabalhadas por dia — Gestão</h2>
-    <p class="note">Mesmo cálculo, separado para não misturar com o pessoal de produção. Baseado no tempo das demandas registradas (esta aba) e de lançamentos manuais com horário, para Danielly e Samira.</p>
+    <p class="note" data-resumo="Mesmo cálculo para a equipe de gestão.">Mesmo cálculo, separado para não misturar com o pessoal de produção. Baseado no tempo das demandas registradas (esta aba) e de lançamentos manuais com horário, para Danielly e Samira.</p>
     <div class="form-card" style="margin-bottom:16px;">
       <div class="field" style="max-width:220px;"><label>Ver um dia específico (opcional)</label><input type="date" id="filtroDiaHorasGestao"></div>
     </div>
@@ -689,7 +703,7 @@ td .cel-sub.nw,.cel-sub.nw{white-space:nowrap;}
   <!-- =============== CONFIG =============== -->
   <section class="view" id="view-config">
     <h2 class="section-title">Equipe e demandas de cada um</h2>
-    <p class="note">Cadastre aqui as demandas fixas de cada colaborador (separadas por vírgula) — isso alimenta o seletor de demanda na aba Demandas e mostra quais demandas ainda não tiveram nenhum registro no mês. <strong>Outros nomes</strong> são os jeitos como a mesma pessoa aparece nos registros: o login do TOTVS ("Pedro" para pedro.silva) ou um nome antigo. Trocar o nome não perde nada: o nome anterior passa para "outros nomes" e os registros continuam dela. <strong>Desativar</strong> tira a pessoa das listas de escolha ("Você é", Demandas, Observações) e mantém todo o histórico. <strong>Excluir</strong> só é possível para quem não tem nenhum registro; com histórico, o painel oferece desativar.</p>
+    <p class="note" data-resumo="Cadastro da equipe: demandas fixas, outros nomes e desativação sem perder histórico.">Cadastre aqui as demandas fixas de cada colaborador (separadas por vírgula) — isso alimenta o seletor de demanda na aba Demandas e mostra quais demandas ainda não tiveram nenhum registro no mês. <strong>Outros nomes</strong> são os jeitos como a mesma pessoa aparece nos registros: o login do TOTVS ("Pedro" para pedro.silva) ou um nome antigo. Trocar o nome não perde nada: o nome anterior passa para "outros nomes" e os registros continuam dela. <strong>Desativar</strong> tira a pessoa das listas de escolha ("Você é", Demandas, Observações) e mantém todo o histórico. <strong>Excluir</strong> só é possível para quem não tem nenhum registro; com histórico, o painel oferece desativar.</p>
     <div class="table-wrap rolavel">
       <table class="tbl-compacta">
         <thead><tr><th>Nome</th><th>Outros nomes</th><th>Setor</th><th>Nível</th><th>Demandas (separadas por vírgula)</th><th>Situação</th><th></th></tr></thead>
@@ -703,7 +717,7 @@ td .cel-sub.nw,.cel-sub.nw{white-space:nowrap;}
     <div class="form-card" id="blocoNomesSoltos"></div>
 
     <h2 class="section-title">Pesos por grupo de produto (TOTVS)</h2>
-    <p class="note">Mesma lógica da sua planilha: informe Unidades e Minutos de referência (um teste cronometrado) para cada código de grupo do TOTVS. O sistema calcula Unidades/hora, o Fator (relativo ao grupo mais rápido) e o Peso por unidade — usado para calcular o "peso produzido" de cada colaborador. Grupo macro é o grupo (Baterias/Teclados/Fontes/Telas/Diversos) que esse código representa nos outros gráficos.</p>
+    <p class="note" data-resumo="Tempo cronometrado de cada grupo do TOTVS, que define o peso por unidade.">Mesma lógica da sua planilha: informe Unidades e Minutos de referência (um teste cronometrado) para cada código de grupo do TOTVS. O sistema calcula Unidades/hora, o Fator (relativo ao grupo mais rápido) e o Peso por unidade — usado para calcular o "peso produzido" de cada colaborador. Grupo macro é o grupo (Baterias/Teclados/Fontes/Telas/Diversos) que esse código representa nos outros gráficos.</p>
     <div class="table-wrap">
       <table>
         <thead><tr><th>Código</th><th>Descrição</th><th>Grupo macro</th><th class="num">Unidades</th><th class="num">Minutos</th><th class="num">Unid/hora</th><th class="num">Fator</th><th class="num">Peso/unidade</th><th></th></tr></thead>
@@ -713,7 +727,7 @@ td .cel-sub.nw,.cel-sub.nw{white-space:nowrap;}
     <button class="btn secondary btn-sm" id="btnAddGrupoFino" style="margin-bottom:24px;">+ Adicionar código de grupo</button>
 
     <h2 class="section-title">Grupos de produto (macro)</h2>
-    <p class="note">Tempo padrão é o quanto a equipe deve levar, em minutos, para produzir 1 peça daquele grupo. Vendas médias mensais alimentam o cálculo de capacidade x demanda. Margem de segurança soma um percentual à meta acima da venda média.</p>
+    <p class="note" data-resumo="Tempo padrão por peça, vendas médias e margem de segurança de cada grupo.">Tempo padrão é o quanto a equipe deve levar, em minutos, para produzir 1 peça daquele grupo. Vendas médias mensais alimentam o cálculo de capacidade x demanda. Margem de segurança soma um percentual à meta acima da venda média.</p>
     <div class="table-wrap">
       <table>
         <thead><tr><th>Grupo</th><th>Responsável</th><th class="num">Tempo padrão (min/peça)</th><th class="num">Vendas médias/mês (peças)</th><th class="num">Margem segurança (%)</th></tr></thead>
@@ -722,7 +736,7 @@ td .cel-sub.nw,.cel-sub.nw{white-space:nowrap;}
     </div>
 
     <h2 class="section-title">Importar vendas médias (relatório "Mais Vendidos")</h2>
-    <p class="note">Exporte do TOTVS o relatório de mais vendidos (colunas Produto, Grupo de Produto, Nº de Pedidos, Quantidade) e importe aqui. O sistema soma a quantidade vendida por grupo, divide pelo número de meses que você informar, e calcula a "Vendas médias mensais" de cada grupo — a mesma base usada na meta e no cálculo de capacidade x demanda acima. Nada é aplicado até você clicar em "Aplicar" na prévia.</p>
+    <p class="note" data-resumo="Importe os mais vendidos do TOTVS para calcular as vendas médias por grupo.">Exporte do TOTVS o relatório de mais vendidos (colunas Produto, Grupo de Produto, Nº de Pedidos, Quantidade) e importe aqui. O sistema soma a quantidade vendida por grupo, divide pelo número de meses que você informar, e calcula a "Vendas médias mensais" de cada grupo — a mesma base usada na meta e no cálculo de capacidade x demanda acima. Nada é aplicado até você clicar em "Aplicar" na prévia.</p>
     <div class="form-card">
       <div class="form-grid">
         <div class="field"><input type="file" id="fileImportVendas" accept=".csv,.txt"></div>
@@ -730,7 +744,7 @@ td .cel-sub.nw,.cel-sub.nw{white-space:nowrap;}
       </div>
       <button class="btn secondary btn-sm" id="btnImportVendas" style="margin-top:14px;">Processar arquivo</button>
       <span id="importVendasMsg" style="margin-left:10px;font-size:13px;color:var(--text-muted);"></span>
-      <div id="importVendasDetalhes" style="margin-top:12px;font-size:12.5px;color:var(--text-muted);line-height:1.6;"></div>
+      <div id="importVendasDetalhes" style="margin-top:12px;font-size:13px;color:var(--text-muted);line-height:1.6;"></div>
     </div>
     <div class="table-wrap" id="wrapPreviaVendas" style="display:none;">
       <table>
@@ -741,7 +755,7 @@ td .cel-sub.nw,.cel-sub.nw{white-space:nowrap;}
     <button class="btn" id="btnAplicarVendas" style="display:none;margin-bottom:24px;">Aplicar essas médias aos grupos</button>
 
     <h2 class="section-title">Configurações gerais de produção</h2>
-    <p class="note">Essas valem para todos os meses. Para Teclados, Telas e Diversos, que têm peso/tempo diferente, o sistema calcula uma meta diária de grupo equivalente automaticamente, usando o "Tempo padrão" de cada grupo (tabela acima).</p>
+    <p class="note" data-resumo="Valem para todos os meses; os demais grupos ganham meta equivalente.">Essas valem para todos os meses. Para Teclados, Telas e Diversos, que têm peso/tempo diferente, o sistema calcula uma meta diária de grupo equivalente automaticamente, usando o "Tempo padrão" de cada grupo (tabela acima).</p>
     <div class="form-card">
       <div class="form-grid">
         <div class="field"><label>Meta diária dos grupos-base (un/dia)</label><input type="number" id="metaBaseUnidades" min="0"></div>
@@ -752,13 +766,13 @@ td .cel-sub.nw,.cel-sub.nw{white-space:nowrap;}
     </div>
 
     <h2 class="section-title"><span>Meta de produção de <span id="mesEditandoLabel">—</span></span></h2>
-    <p class="note"><strong>Isso vale só para o mês selecionado no topo da página</strong> — troque o mês/ano no seletor lá em cima para editar outro mês. Cada mês guarda sua própria lista de quem tem meta e seu próprio valor combinado; mudar um mês não altera os outros. Quando um mês novo ainda não foi configurado, ele começa como uma cópia do mês anterior mais recente, pra você só ajustar o que mudou.</p>
+    <p class="note" data-resumo="Vale só para o mês selecionado no topo da página."><strong>Isso vale só para o mês selecionado no topo da página</strong> — troque o mês/ano no seletor lá em cima para editar outro mês. Cada mês guarda sua própria lista de quem tem meta e seu próprio valor combinado; mudar um mês não altera os outros. Quando um mês novo ainda não foi configurado, ele começa como uma cópia do mês anterior mais recente, pra você só ajustar o que mudou.</p>
     <div class="form-card">
       <div class="form-grid">
         <div class="field"><label>Quem tem meta de produção nesse mês (separados por vírgula)</label><input type="text" id="pessoasComMetaInput" placeholder="Ex: Arthur, Felipe"></div>
         <div class="field"><label>Meta combinada do mês (peças, soma de todos com meta)</label><input type="number" id="metaCombinadaInput" min="0" placeholder="Ex: 48000"></div>
       </div>
-      <p class="note" style="margin:10px 0 0;">Samira (separação) e Danielly (só produz em emergência) ficam de fora da meta por padrão — continuam aparecendo nos gráficos, só não entram na avaliação de cumprimento de meta.</p>
+      <p class="note" data-resumo="Samira e Danielly ficam fora da meta por padrão." style="margin:10px 0 0;">Samira (separação) e Danielly (só produz em emergência) ficam de fora da meta por padrão — continuam aparecendo nos gráficos, só não entram na avaliação de cumprimento de meta.</p>
       <button class="btn secondary btn-sm" id="btnSaveMetaMes" style="margin-top:14px;">Salvar meta deste mês</button>
     </div>
 
@@ -777,14 +791,14 @@ td .cel-sub.nw,.cel-sub.nw{white-space:nowrap;}
     </div>
 
     <h2 class="section-title">Equipe considerada nos painéis de desempenho</h2>
-    <p class="note">Nomes separados por vírgula. Só quem estiver aqui aparece nas tabelas de Produção por colaborador, Desempenho individual e Peso produzido — assim o painel não mistura com gente de outros times que apareça na base do TOTVS.</p>
+    <p class="note" data-resumo="Só quem estiver nesta lista aparece nas tabelas de produção e desempenho.">Nomes separados por vírgula. Só quem estiver aqui aparece nas tabelas de Produção por colaborador, Desempenho individual e Peso produzido — assim o painel não mistura com gente de outros times que apareça na base do TOTVS.</p>
     <div class="form-card">
       <div class="field"><input type="text" id="equipeProducaoInput" placeholder="Ex: Danielly, Samira, Arthur, Felipe, Kauan"></div>
       <button class="btn secondary btn-sm" id="btnSaveEquipeProducao" style="margin-top:14px;">Salvar equipe</button>
     </div>
 
     <h2 class="section-title">Quem entra em cada tabela de "Horas trabalhadas por dia"</h2>
-    <p class="note">Separe quem produz (Produção) de quem cuida de demandas administrativas (Gestão), pra essas tabelas não ficarem misturadas na aba Demandas.</p>
+    <p class="note" data-resumo="Separe quem produz (Produção) de quem cuida de demandas (Gestão).">Separe quem produz (Produção) de quem cuida de demandas administrativas (Gestão), pra essas tabelas não ficarem misturadas na aba Demandas.</p>
     <div class="form-card">
       <div class="form-grid">
         <div class="field"><label>Produção</label><input type="text" id="horasProducaoInput" placeholder="Ex: Kauan, Felipe, Arthur"></div>
@@ -809,7 +823,7 @@ td .cel-sub.nw,.cel-sub.nw{white-space:nowrap;}
       <div>
         <h2 class="section-title">Dados e backup</h2>
         <div class="form-card">
-          <p class="note" style="margin-top:0;">Os dados ficam <strong>na nuvem</strong>: o que uma pessoa importa ou lança aparece nos outros computadores em poucos segundos, sem ninguém levar arquivo. O navegador guarda uma cópia para a tela abrir na hora e para o painel continuar funcionando sem internet — o que for feito offline sobe assim que a conexão voltar.</p>
+          <p class="note" data-resumo="Os dados ficam na nuvem e aparecem em todos os computadores em segundos." style="margin-top:0;">Os dados ficam <strong>na nuvem</strong>: o que uma pessoa importa ou lança aparece nos outros computadores em poucos segundos, sem ninguém levar arquivo. O navegador guarda uma cópia para a tela abrir na hora e para o painel continuar funcionando sem internet — o que for feito offline sobe assim que a conexão voltar.</p>
           <div id="nuvemDetalhe" class="note" style="margin-top:0;"></div>
           <button class="btn secondary" id="btnNuvemAgora">Sincronizar agora</button>
           <button class="btn secondary" id="btnNuvemSobrepor" title="Substitui o que está na nuvem pelo que está neste computador">Usar os dados deste PC</button>
@@ -824,11 +838,11 @@ td .cel-sub.nw,.cel-sub.nw{white-space:nowrap;}
   <!-- =============== LOGS (quem fez o quê, e quem está aqui agora) =============== -->
   <section class="view" id="view-logs">
     <h2 class="section-title">Quem está no painel agora</h2>
-    <p class="note">É o mesmo que a bolinha verde lá em cima mostra. Aparece quem abriu o painel <strong>e escolheu o nome</strong> no alto da tela — sem nome escolhido não dá para saber quem é. Quem fecha a aba some na hora; quem perde a internet some em cerca de um minuto e meio.</p>
+    <p class="note" data-resumo="Quem está com o painel aberto agora.">É o mesmo que a bolinha verde lá em cima mostra. Aparece quem abriu o painel <strong>e escolheu o nome</strong> no alto da tela — sem nome escolhido não dá para saber quem é. Quem fecha a aba some na hora; quem perde a internet some em cerca de um minuto e meio.</p>
     <div class="form-card" id="presencaLista" style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;"></div>
 
     <h2 class="section-title">Registro de atividade</h2>
-    <p class="note">Tudo o que mexe nos dados fica registrado com data e hora: quem acessou, quem importou arquivo do TOTVS, quem lançou, quem apagou, quem restaurou backup. O registro é <strong>só de escrita</strong>: nem o painel nem o banco permitem editar ou apagar o que já entrou.</p>
+    <p class="note" data-resumo="Tudo o que mexe nos dados fica registrado, sem poder ser apagado.">Tudo o que mexe nos dados fica registrado com data e hora: quem acessou, quem importou arquivo do TOTVS, quem lançou, quem apagou, quem restaurou backup. O registro é <strong>só de escrita</strong>: nem o painel nem o banco permitem editar ou apagar o que já entrou.</p>
     <div class="form-card" style="margin-bottom:16px;">
       <div class="form-grid">
         <div class="field"><label>Quem</label><select id="logFiltroQuem"></select></div>
@@ -2516,7 +2530,7 @@ function renderDashboard(){
       return `<tr>
         <td>${c}</td>
         ${porGrupoColab.map(v=>`<td class="num">${v.toLocaleString("pt-BR")}</td>`).join("")}
-        <td class="num" style="font-weight:700;">${total.toLocaleString("pt-BR")}</td>
+        <td class="num" style="font-weight:600;">${total.toLocaleString("pt-BR")}</td>
       </tr>`;
     }).join("");
   }
@@ -3359,7 +3373,7 @@ function renderTabelaHorasDia(idTabela, linhas, meta){
       <td>${esc(l.nome)}</td>
       <td class="num">${l.horasProducao.toFixed(1)}</td>
       <td class="num">${l.horasDemandas.toFixed(1)}${l.demandas.length ? `<div class="cel-sub cel-dem-dia">${textoDemandasDia(l.demandas)}</div>` : ""}</td>
-      <td class="num" style="font-weight:700;">${l.horas.toFixed(1)}</td>
+      <td class="num" style="font-weight:600;">${l.horas.toFixed(1)}</td>
       <td>${dentro===null ? "—" : (dentro ? `<span class="badge good">Ok</span>` : `<span class="badge bad">Abaixo de ${meta}h</span>`)}</td>
     </tr>`;
   }).join("");
@@ -3538,7 +3552,7 @@ function renderTodasDemandas(entradas){
       <td>${badgeStatusDemanda(d.status)}</td>
       <td><div class="acoes"><button class="del-btn" onclick="editarDemanda(${jsArg(d.id)})">Editar</button><button class="del-btn" onclick="removerDemanda(${jsArg(d.id)})">Excluir</button></div></td>
     </tr>`;
-  }).join("") + `<tr><td colspan="4" style="color:var(--text-muted);">${lista.length} registro(s)</td><td class="num" style="font-weight:700;">${(totalMin/60).toFixed(1)}</td><td colspan="2"></td></tr>`;
+  }).join("") + `<tr><td colspan="4" style="color:var(--text-muted);">${lista.length} registro(s)</td><td class="num" style="font-weight:600;">${(totalMin/60).toFixed(1)}</td><td colspan="2"></td></tr>`;
 }
 
 function linhaEdicaoDemanda(d){
@@ -3828,7 +3842,7 @@ function renderNomesSoltos(){
   const opcoes = `<option value="">Escolha a pessoa...</option>` + state.equipe.map((p,i)=>`<option value="${i}">${esc(p.nome)}${pessoaAtiva(p) ? "" : " (inativo)"}</option>`).join("");
   let html = "";
   if(pares.length){
-    html += `<p class="note" style="margin:0 0 10px;"><strong>Mesmo primeiro nome no cadastro.</strong> Se for a mesma pessoa, junte os dois cadastros. Se forem pessoas diferentes, preencha "Outros nomes" de cada uma com o login do TOTVS (ex.: "Pedro" para pedro.silva). Sem isso o painel não sabe de quem são os lançamentos.</p>
+    html += `<p class="note" data-resumo="Mesmo primeiro nome no cadastro: junte os cadastros ou preencha os outros nomes." style="margin:0 0 10px;"><strong>Mesmo primeiro nome no cadastro.</strong> Se for a mesma pessoa, junte os dois cadastros. Se forem pessoas diferentes, preencha "Outros nomes" de cada uma com o login do TOTVS (ex.: "Pedro" para pedro.silva). Sem isso o painel não sabe de quem são os lançamentos.</p>
       <div class="table-wrap rolavel" style="margin-bottom:16px;"><table class="tbl-compacta"><tbody>` +
       pares.map(([i,j])=>`<tr><td>${esc(state.equipe[i].nome)} <span style="color:var(--text-muted);">e</span> ${esc(state.equipe[j].nome)}</td>
         <td><div class="acoes"><button class="del-btn" onclick="juntarPessoas(${i},${j})">Juntar em ${esc(state.equipe[i].nome)}</button><button class="del-btn" onclick="juntarPessoas(${j},${i})">Juntar em ${esc(state.equipe[j].nome)}</button></div></td></tr>`).join("") +
@@ -3836,7 +3850,7 @@ function renderNomesSoltos(){
   }
   if(usos.size){
     let k = 0;
-    html += `<p class="note" style="margin:0 0 10px;"><strong>Nomes sem cadastro.</strong> Aparecem nos registros ou nas listas de Configurações e não batem com ninguém do cadastro. "Juntar" guarda o nome como outro nome da pessoa escolhida. "Cadastrar" cria a pessoa. Nenhum registro é alterado.</p>
+    html += `<p class="note" data-resumo="Nomes sem cadastro: junte a uma pessoa ou cadastre. Nenhum registro é alterado." style="margin:0 0 10px;"><strong>Nomes sem cadastro.</strong> Aparecem nos registros ou nas listas de Configurações e não batem com ninguém do cadastro. "Juntar" guarda o nome como outro nome da pessoa escolhida. "Cadastrar" cria a pessoa. Nenhum registro é alterado.</p>
       <div class="table-wrap rolavel" style="margin-bottom:0;"><table class="tbl-compacta"><thead><tr><th>Nome</th><th>Onde aparece</th><th>É a mesma pessoa que...</th><th></th></tr></thead><tbody>` +
       Array.from(usos.values()).sort((a,b)=>a.nome.localeCompare(b.nome)).map(u=>{
         const id = "selJuntar" + (k++);
@@ -3847,6 +3861,31 @@ function renderNomesSoltos(){
       }).join("") + `</tbody></table></div>`;
   }
   box.innerHTML = html || `<div class="note" style="margin:0;">Nenhum nome repetido ou sem cadastro.</div>`;
+  prepararNotas(box);
+}
+
+/* ---- textos explicativos: mostra o resumo e guarda o texto inteiro atrás de "Ver mais" ---- */
+function prepararNotas(raiz){
+  (raiz || document).querySelectorAll(".note[data-resumo]:not([data-pronta])").forEach(p=>{
+    p.dataset.pronta = "1";
+    const completa = document.createElement("span");
+    completa.className = "nota-completa";
+    while(p.firstChild) completa.appendChild(p.firstChild);   // move os nós: ids como #pessoasComMetaRef continuam valendo
+    const resumo = document.createElement("span");
+    resumo.className = "nota-resumo";
+    resumo.textContent = p.dataset.resumo;
+    const bt = document.createElement("button");
+    bt.type = "button";
+    bt.className = "nota-toggle";
+    bt.textContent = "Ver mais";
+    bt.setAttribute("aria-expanded", "false");
+    bt.addEventListener("click", ()=>{
+      const aberta = p.classList.toggle("aberta");
+      bt.textContent = aberta ? "Ver menos" : "Ver mais";
+      bt.setAttribute("aria-expanded", String(aberta));
+    });
+    p.append(resumo, completa, " ", bt);
+  });
 }
 
 function juntarNomeSolto(nome, idSelect){
@@ -4053,7 +4092,7 @@ document.getElementById("btnImportVendas").addEventListener("click", async ()=>{
       return `<tr>
         <td>${g.nome}</td>
         <td class="num">${total.toLocaleString("pt-BR")}</td>
-        <td class="num" style="font-weight:700;color:var(--accent);">${media.toLocaleString("pt-BR")}</td>
+        <td class="num" style="font-weight:600;color:var(--accent);">${media.toLocaleString("pt-BR")}</td>
         <td class="num">${g.vendasMedias.toLocaleString("pt-BR")}</td>
       </tr>`;
     }).join("");
@@ -4357,7 +4396,7 @@ function renderMetaDiariaHoras(entradasEquipe){
       else if(dentro) statusHtml = `<span class="badge good">Meta cumprida</span>`;
       else statusHtml = `<span class="badge bad">Abaixo de ${meta}h</span>`;
       const avisoHtml = suspeito ? ` <span class="badge bad" title="Acima de ${state.metasProducao.horasMaxDia}h/dia — provavelmente produziu itens que outra pessoa finalizou (ex: colagem de etiqueta), vale conferir">⚠ conferir</span>` : "";
-      const motivoHtml = j ? `<div style="font-size:11.5px;color:var(--text-muted);margin-top:4px;max-width:260px;">${j.motivo}</div>` : "";
+      const motivoHtml = j ? `<div style="font-size:11px;color:var(--text-muted);margin-top:4px;max-width:260px;">${j.motivo}</div>` : "";
       return `<tr>
         <td class="nw">${formatarDataBr(d.data)}</td>
         <td class="num">${d.pecas.toLocaleString("pt-BR")}</td>
@@ -4785,7 +4824,7 @@ function renderMetasDiarias(){
     return `<tr>
       <td>${g.nome}</td>
       <td class="num">${g.tempoPadrao}</td>
-      <td class="num" style="font-weight:700;">${Math.round(meta).toLocaleString("pt-BR")}</td>
+      <td class="num" style="font-weight:600;">${Math.round(meta).toLocaleString("pt-BR")}</td>
       <td>${ehBase ? `<span class="badge good">meta base</span>` : `<span class="badge" style="background:var(--surface-3);color:var(--text-muted);">equivalente por peso</span>`}</td>
     </tr>`;
   }).join("");
@@ -4854,7 +4893,7 @@ function renderGruposFinos(){
   }).join("");
 
   tbl.querySelectorAll(".cfg-input-fino").forEach(inp=>{
-    const minFino = { codigo:80, descricao:290, macroGrupo:115, unidadesRef:80, minutosRef:80 }[inp.dataset.field] || 80;
+    const minFino = { codigo:80, descricao:300, macroGrupo:115, unidadesRef:80, minutosRef:80 }[inp.dataset.field] || 80;
     inp.style.cssText += "background:transparent;border:1px solid transparent;color:inherit;font-family:inherit;font-size:inherit;padding:4px 6px;border-radius:4px;width:100%;min-width:" + minFino + "px;";
     if(inp.dataset.field === "codigo") inp.style.fontFamily = "'IBM Plex Mono',monospace";
     const evento = inp.tagName === "SELECT" ? "change" : "blur";
@@ -4984,6 +5023,7 @@ document.getElementById("dData").valueAsDate = new Date();
 document.getElementById("jData").valueAsDate = new Date();
 document.getElementById("climaData").valueAsDate = new Date();
 document.getElementById("obsData").valueAsDate = new Date();
+prepararNotas();
 renderAll();
 nuvemIniciar();
 </script>

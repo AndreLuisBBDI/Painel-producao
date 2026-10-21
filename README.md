@@ -233,6 +233,18 @@ mostra as duas separadas e o total ao lado:
 O status dos dias (mínimo de horas) continua calculado como antes. As
 demandas do dia aparecem ao lado só como contexto.
 
+## Textos explicativos: resumo e "Ver mais"
+
+Todo `<p class="note">` com mais de uma linha e meia ganha o atributo `data-resumo` com uma frase curta.
+Ao abrir a página, `prepararNotas()` põe o resumo na frente e guarda o texto inteiro atrás de **Ver mais**
+(**Ver menos** recolhe). O texto original continua no HTML como estava: os nós são movidos, não copiados,
+então ids dentro do texto (`#pessoasComMetaRef`, `#metaHorasRef`) seguem sendo atualizados pelo render.
+Nota criada por script precisa chamar `prepararNotas(caixa)` depois do `innerHTML`, como faz `renderNomesSoltos()`.
+
+Tipografia: Manrope nos títulos e botões, Inter no texto, IBM Plex Mono nos números (`--f-titulo`, `--f-texto`,
+`--f-num` no `:root`). Plex Mono vai até 600: peso acima disso o navegador inventaria um negrito falso, por isso
+`font-synthesis-weight:none` no `body`. Botões e campos herdam a fonte da página.
+
 ## Estrutura
 
 ```
